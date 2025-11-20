@@ -24,8 +24,8 @@ public class PlayerMove : MonoBehaviour
 
     private void HandleMovement()
     {
-        float h = Input.GetAxisRaw("HorizontalAxis");
-        float v = Input.GetAxisRaw("VerticalAxis");
+        float h = Input.GetAxisRaw(HorizontalAxis);
+        float v = Input.GetAxisRaw(VerticalAxis);
 
         Vector2 direction = new Vector2(h, v).normalized;
 
@@ -35,7 +35,7 @@ public class PlayerMove : MonoBehaviour
 
     private void UpdateAnimation(Vector2 direction, float horizontalInput)
     {
-        _animator.SetBool("IsRunningParam", direction != Vector2.zero);
+        _animator.SetBool(IsRunningParam, direction != Vector2.zero);
 
         if (horizontalInput < 0)
         {
