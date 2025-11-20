@@ -8,7 +8,7 @@ public class PlayerAttackController : MonoBehaviour
     private float _shootTimer = 0;
 
     [Header("Àû Å½Áö")]
-    [SerializeField] private float _detectionRange = 6.5f;
+    [SerializeField] private float _detectionRange = 1f;
     [SerializeField] private float _detectionCoolTime = 0.2f;
     private float _detectionTimer = 0;
 
@@ -19,9 +19,11 @@ public class PlayerAttackController : MonoBehaviour
 
     [Header("ÃÑ¾Ë")]
     [SerializeField] private GameObject _bullet;
+    [SerializeField] private Transform _firePosition;
     private Vector2 _direction;
 
     private Animator _animator;
+
 
     private void Awake()
     {
@@ -37,17 +39,16 @@ public class PlayerAttackController : MonoBehaviour
         UpdateTarget();
     }
 
-
-    private Transform UpdateTarget()
+    private void UpdateTarget()
     {
         _detectionTimer += Time.deltaTime;
 
         if (_detectionTimer > _detectionCoolTime)
         {
-            _detectionTimer = 0;
             _target = DetectTarget();
+            _detectionTimer = 0;
         }
-        return _target;
+        TryShoot(_target);
     }
 
     private Transform DetectTarget()
@@ -71,25 +72,31 @@ public class PlayerAttackController : MonoBehaviour
             }
             _hits[i] = null;
         }
-        Debug.Log(closesetTarget);
         return closesetTarget;
     }
 
-    private void TryShoot()
+    private void TryShoot(Transform target)
     {
+        if (_target == null) return;
+
         _shootTimer += Time.deltaTime;
 
         if (_shootTimer > _shootCoolTime)
         {
-            Shoot();
+            Shoot(target);
             _shootTimer = 0f;
         }
     }
 
-    private void Shoot()
+    private void Shoot(Transform target)
     {
-        _animator.SetBool("IsShooting", _shootTimer > _shootCoolTime);
+        if (_target == null) return;
 
+        _direction = (target.position - _firePosition.position).normalized;
+
+        GameObject gameObject = Instantiate(_bullet, _firePosition.position, Quaternion.identity);
+        Bullet bullet = gameObject.GetComponent<Bullet>();
+        bullet.SetDirection(_direction);
     }
 
     private void OnDrawGizmos()
