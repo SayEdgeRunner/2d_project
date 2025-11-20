@@ -97,6 +97,8 @@ public class PlayerAttackController : MonoBehaviour
         GameObject gameObject = Instantiate(_bullet, _firePosition.position, Quaternion.identity);
         Bullet bullet = gameObject.GetComponent<Bullet>();
         bullet.SetDirection(_direction);
+
+        _animator.SetTrigger("Shooting");
     }
 
     private void OnDrawGizmos()
