@@ -1,3 +1,4 @@
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
@@ -5,7 +6,6 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private float _speed = 1f;
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
-    private float _directionX = 0f;
 
     private void Awake()
     {
@@ -15,35 +15,36 @@ public class PlayerMove : MonoBehaviour
 
     private void Update()
     {
-        Move();
+        HandleMovement();
     }
 
-    private void Move()
+    private void HandleMovement()
     {
         float h = Input.GetAxisRaw("Horizontal");
         float v = Input.GetAxisRaw("Vertical");
 
         Vector2 direction = new Vector2(h, v).normalized;
 
+        UpdateAnimation(direction, h);
+        MoveCharacter(direction);
+    }
+
+    private void UpdateAnimation(Vector2 direction, float horizontalInput)
+    {
         _animator.SetBool("IsRunning", direction != Vector2.zero);
 
-        if (direction != Vector2.zero)
-        {
-            _directionX = direction.x;
-        }
-
-        if (_directionX < 0)
+        if (horizontalInput < 0)
         {
             _spriteRenderer.flipX = true;
         }
-        else
+        else if (horizontalInput > 0)
         {
             _spriteRenderer.flipX = false;
         }
+    }
 
-        Vector2 position = transform.position;
-        Vector2 newPosition = position + (direction * _speed) * Time.deltaTime;
-        
-        transform.position = newPosition;
+    private void MoveCharacter(Vector2 direction)
+    {
+        transform.Translate(direction * _speed * Time.deltaTime);
     }
 }
