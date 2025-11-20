@@ -6,7 +6,7 @@ using UnityEngine;
 /// 뱀파이어 서바이벌 스타일의 2D 무한 맵 시스템
 /// 제한된 타일을 재사용하여 무한한 맵처럼 보이게 만듦
 /// </summary>
-public class SceneManager : MonoBehaviour
+public class ChunkManager : MonoBehaviour
 {
     [Header("타일 설정")]
     [SerializeField] private GameObject _tilePrefab; // 반복 사용할 타일 프리팹
