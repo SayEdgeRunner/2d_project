@@ -1,5 +1,6 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 /// <summary>
 /// 뱀파이어 서바이벌 스타일의 2D 무한 맵 시스템
@@ -26,7 +27,17 @@ public class SceneManager : MonoBehaviour
         // 플레이어가 할당되지 않았으면 자동으로 찾기
         if (_player == null)
         {
-            _player = GameObject.FindGameObjectWithTag("Player")?.transform;
+            var playerObject = GameObject.FindGameObjectWithTag("Player");
+            if (playerObject != null)
+            {
+                _player = playerObject.transform;
+            }
+            else
+            {
+                Debug.LogError("Player with tag 'Player' not found. Disabling SceneManager.", this);
+                enabled = false;
+                return;
+            }
         }
 
         // 게임 시작 시 플레이어 주변에 타일 그리드 생성
@@ -102,70 +113,48 @@ public class SceneManager : MonoBehaviour
     void UpdateTiles(Vector2Int newCenterChunk)
     {
         int halfSize = _gridSize / 2;
+        var requiredPositions = new HashSet<Vector2Int>();
 
-        // 재배치된 타일들을 저장할 새 딕셔너리
-        Dictionary<Vector2Int, GameObject> newGrid = new Dictionary<Vector2Int, GameObject>();
-
-        // 새로운 플레이어 위치를 중심으로 필요한 타일 위치 계산
+        // 새로운 중심 주변에 필요한 모든 타일 위치를 계산합니다.
         for (int x = -halfSize; x <= halfSize; x++)
         {
             for (int y = -halfSize; y <= halfSize; y++)
             {
-                // 새로운 그리드에서 이 타일이 있어야 할 절대 좌표
-                // 예: 플레이어가 (2, 3) 청크에 있고, 상대위치가 (-1, 0)이면
-                //     실제 타일은 (1, 3) 위치에 있어야 함
-                Vector2Int targetGridPos = new Vector2Int(
-                    newCenterChunk.x + x,
-                    newCenterChunk.y + y
-                );
-
-                // 기존 타일 중 아직 사용하지 않은 타일 하나를 찾아서 재사용
-                GameObject tile = FindClosestUnusedTile(targetGridPos, newGrid);
-
-                if (tile != null)
-                {
-                    // 타일을 새로운 월드 위치로 이동 (2D는 x, y만 사용, z는 0)
-                    Vector3 newWorldPos = new Vector3(
-                        targetGridPos.x * _tileSize,
-                        targetGridPos.y * _tileSize,
-                        0
-                    );
-                    tile.transform.position = newWorldPos;
-
-                    // 디버깅용 이름 변경
-                    tile.name = $"Tile_{targetGridPos.x}_{targetGridPos.y}";
-
-                    // 새 그리드에 타일 등록
-                    newGrid[targetGridPos] = tile;
-                }
+                requiredPositions.Add(new Vector2Int(newCenterChunk.x + x, newCenterChunk.y + y));
             }
         }
 
-        // 기존 그리드를 새 그리드로 교체
-        // 이제 tileGrid는 플레이어 주변의 새로운 타일 배치를 가리킴
-        _tileGrid = newGrid;
-    }
+        var currentPositions = new HashSet<Vector2Int>(_tileGrid.Keys);
 
-    /// <summary>
-    /// 아직 재배치되지 않은 타일을 찾아서 반환
-    /// 이미 newGrid에 등록된 타일은 건너뛰고, 사용 가능한 타일 반환
-    /// </summary>
-    GameObject FindClosestUnusedTile(Vector2Int targetPos, Dictionary<Vector2Int, GameObject> usedTiles)
-    {
-        // 기존 tileGrid의 모든 타일을 순회
-        foreach (var kvp in _tileGrid)
+        // 더 이상 필요 없는 타일(재활용 대상)과 새로 타일이 필요한 위치를 찾습니다.
+        var positionsToRecycle = new Queue<Vector2Int>(currentPositions.Except(requiredPositions));
+        var newPositions = new Queue<Vector2Int>(requiredPositions.Except(currentPositions));
+
+        // 재활용 대상 타일을 새로운 위치로 이동시킵니다.
+        while (newPositions.Count > 0)
         {
-            // 이 타일이 이미 새로운 위치에 배치되었으면 건너뛰기
-            if (usedTiles.ContainsValue(kvp.Value))
-                continue;
+            if (positionsToRecycle.Count == 0)
+            {
+                Debug.LogError("재활용할 타일이 부족합니다. 그리드 크기가 일정하다면 발생해서는 안 되는 문제입니다.", this);
+                break;
+            }
 
-            // 아직 사용되지 않은 타일 발견! 이걸 재사용
-            return kvp.Value;
+            var oldPos = positionsToRecycle.Dequeue();
+            var newPos = newPositions.Dequeue();
+
+            // 타일 객체를 재사용합니다.
+            GameObject tile = _tileGrid[oldPos];
+            _tileGrid.Remove(oldPos);
+
+            // 새로운 위치로 이동하고 정보를 업데이트합니다.
+            tile.transform.position = new Vector3(newPos.x * _tileSize, newPos.y * _tileSize, 0);
+            tile.name = $"Tile_{newPos.x}_{newPos.y}";
+
+            // 그리드 딕셔너리를 업데이트합니다.
+            _tileGrid[newPos] = tile;
         }
-
-        // 모든 타일이 사용됨 (정상적으로는 발생하지 않음)
-        return null;
     }
+
 
     /// <summary>
     /// Scene 뷰에서 타일 배치를 시각적으로 확인하기 위한 기즈모 (2D)
