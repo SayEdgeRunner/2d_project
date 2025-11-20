@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Threading;
 using UnityEngine;
 
@@ -7,103 +8,41 @@ public class PlayerAttackController : MonoBehaviour
     [SerializeField] private float _shootCoolTime = 2f;
     private float _shootTimer = 0;
 
-    [Header("Àû Å½Áö")]
-    [SerializeField] private float _detectionRange = 1f;
-    [SerializeField] private float _detectionCoolTime = 0.2f;
-    private float _detectionTimer = 0;
-
-    private Transform _target;
-    private ContactFilter2D _filter;
-    private Collider2D[] _hits;
-    private const int MaxHits = 10;
-
     [Header("ÃÑ¾Ë")]
     [SerializeField] private GameObject _bullet;
     [SerializeField] private Transform _firePosition;
-    private Vector2 _direction;
 
-    private Animator _animator;
+    private Camera _camera;
 
 
     private void Awake()
     {
-        _filter = new ContactFilter2D();
-        _filter.SetLayerMask(LayerMask.GetMask("Enemy"));
-        _hits = new Collider2D[MaxHits];
-
-        _animator = GetComponent<Animator>();
+        _camera = Camera.main;
     }
 
     private void Update()
     {
-        UpdateTarget();
+        TryShoot();
     }
 
-    private void UpdateTarget()
+    private void TryShoot()
     {
-        _detectionTimer += Time.deltaTime;
-
-        if (_detectionTimer > _detectionCoolTime)
-        {
-            _target = DetectTarget();
-            _detectionTimer = 0;
-        }
-        TryShoot(_target);
-    }
-
-    private Transform DetectTarget()
-    {
-        int hitCount = Physics2D.OverlapCircle(transform.position, _detectionRange, _filter, _hits);
-
-        float closestDistance = Mathf.Infinity;
-        Transform closesetTarget = null;
-
-        for (int i = 0; i < hitCount; i++)
-        {
-            var hit = _hits[i];
-            if (hit == null) continue;
-            if (hit.CompareTag("Enemy") == false) continue;
-
-            float distance = (transform.position - hit.transform.position).sqrMagnitude;
-            if (distance < closestDistance)
-            {
-                closestDistance = distance;
-                closesetTarget = hit.transform;
-            }
-            _hits[i] = null;
-        }
-        return closesetTarget;
-    }
-
-    private void TryShoot(Transform target)
-    {
-        if (_target == null) return;
-
         _shootTimer += Time.deltaTime;
 
-        if (_shootTimer > _shootCoolTime)
-        {
-            Shoot(target);
-            _shootTimer = 0f;
-        }
+        if (_shootTimer < _shootCoolTime) return;
+
+        Shoot();
+        _shootTimer = 0f;
     }
 
-    private void Shoot(Transform target)
+    private void Shoot()
     {
-        if (_target == null) return;
+        Vector3 cursorPosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, -_camera.transform.position.z);
+        Vector3 mouseWorldPosition = _camera.ScreenToWorldPoint(cursorPosition);
+        Vector2 direction = (mouseWorldPosition - _firePosition.position).normalized;
 
-        _direction = (target.position - _firePosition.position).normalized;
-
-        GameObject gameObject = Instantiate(_bullet, _firePosition.position, Quaternion.identity);
-        Bullet bullet = gameObject.GetComponent<Bullet>();
-        bullet.SetDirection(_direction);
-
-        _animator.SetTrigger("Shooting");
-    }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position, _detectionRange);
+        var bulletObject = Instantiate(_bullet, _firePosition.position, Quaternion.identity);
+        Bullet bullet = bulletObject.GetComponent<Bullet>();
+        bullet.SetDirection(direction);
     }
 }
