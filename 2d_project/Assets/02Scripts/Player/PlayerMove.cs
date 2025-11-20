@@ -7,6 +7,10 @@ public class PlayerMove : MonoBehaviour
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
 
+    private const string HorizontalAxis = "Horizontal";
+    private const string VerticalAxis = "Vertical";
+    private const string IsRunningParam = "IsRunning";
+
     private void Awake()
     {
         _animator = GetComponent<Animator>();
@@ -20,8 +24,8 @@ public class PlayerMove : MonoBehaviour
 
     private void HandleMovement()
     {
-        float h = Input.GetAxisRaw("Horizontal");
-        float v = Input.GetAxisRaw("Vertical");
+        float h = Input.GetAxisRaw("HorizontalAxis");
+        float v = Input.GetAxisRaw("VerticalAxis");
 
         Vector2 direction = new Vector2(h, v).normalized;
 
@@ -31,7 +35,7 @@ public class PlayerMove : MonoBehaviour
 
     private void UpdateAnimation(Vector2 direction, float horizontalInput)
     {
-        _animator.SetBool("IsRunning", direction != Vector2.zero);
+        _animator.SetBool("IsRunningParam", direction != Vector2.zero);
 
         if (horizontalInput < 0)
         {
