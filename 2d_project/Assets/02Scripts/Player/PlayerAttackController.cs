@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Threading;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerAttackController : MonoBehaviour
 {
@@ -16,12 +14,7 @@ public class PlayerAttackController : MonoBehaviour
     [SerializeField] private Camera _camera;
 
 
-    private void Update()
-    {
-        TryShoot();
-    }
-
-    private void TryShoot()
+    public void HandleAttack()
     {
         _shootTimer += Time.deltaTime;
 

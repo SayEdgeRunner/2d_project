@@ -11,10 +11,12 @@ GameObject:
   - component: {fileID: 4438809968728143668}
   - component: {fileID: 789656906711487818}
   - component: {fileID: 2955246261578387346}
-  - component: {fileID: 2061698333475490794}
   - component: {fileID: 6365579347857280163}
   - component: {fileID: 1519425519639987846}
+  - component: {fileID: 2061698333475490794}
   - component: {fileID: 6403124416702518679}
+  - component: {fileID: 1982241527552475363}
+  - component: {fileID: 4274884020817413833}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -115,19 +117,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &2061698333475490794
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 523497229797086500}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe1467eb5726e3942b42fc8375537e27, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _speed: 1
 --- !u!68 &6365579347857280163
 EdgeCollider2D:
   m_ObjectHideFlags: 0
@@ -222,6 +211,19 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &2061698333475490794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 523497229797086500}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe1467eb5726e3942b42fc8375537e27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _speed: 1
 --- !u!114 &6403124416702518679
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -235,8 +237,187 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _shootCoolTime: 1.5
-  _bullet: {fileID: 523271577020436131, guid: 643e1463606de8e4b9d48df17db0b5c8, type: 3}
+  _bullet: {fileID: 6178051976119972146, guid: 643e1463606de8e4b9d48df17db0b5c8, type: 3}
   _firePosition: {fileID: 26744762139814409}
+  _camera: {fileID: 0}
+--- !u!114 &1982241527552475363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 523497229797086500}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b4cea5d11fb699439ac5c33af6536df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BaseStat:
+    Health: 100
+    MaxHealth: 100
+    MoveSpeed: 5
+    AttackDamage: 20
+    AttackSpeed: 0.5
+    SandevistanDuration: 3
+    SandevistanCooldown: 15
+    SandevistanExtraDuration: 1
+    SandevistanCooldownReduceRate: 0.2
+    SandevistanDamageBonusRate: 0.3
+    SandevistanBulletRicochet: 2
+    SandevistanEndBuffDuration: 3
+    SandevistanEndMoveSpeedBonus: 0.3
+    BlinkDistance: 5
+    BlinkCount: 2
+    BlinkInvincibleTime: 1
+    BlinkShockArea: 3
+    BlinkShockDamageRate: 1.5
+    BlinkFieldDuration: 2
+    BlinkFieldRange: 5
+    PlasmaFieldRange: 5
+    PlasmaFieldDamageRate: 0.8
+    LaserDamageBonusRate: 0.5
+    LaserPierceCount: 5
+    MissileFireInterval: 2
+    MissileCount: 3
+    MissileDamageRate: 2
+    HackRange: 8
+    HackCooldown: 8
+    HackTargetCount: 1
+    HackDuration: 2
+    HackDotDamageRate: 1
+    HackDotDuration: 5
+    HackSpreadCount: 3
+    HackSpreadRange: 5
+    HackExplodeCondition: 20
+    HackExplodeDamageRate: 1.5
+    HackSlowRate: 0.3
+    HackSlowDuration: 2
+    HackSlowSpreadCount: 6
+    HackDamageIncreaseRate: 0.3
+    HackFieldCondition: 50
+    HackFieldRange: 8
+    HackFieldDuration: 5
+    HackFieldDamageRate: 1.2
+    HackControlCount: 3
+    HackControlDuration: 5
+    HackControlSpreadCount: 2
+    HackControlExplodeRange: 5
+    HackControlExplodeDamageRate: 2
+    BerserkDuration: 8
+    BerserkCooldown: 12
+    BerserkDamageRate: 0.5
+    BerserkAttackSpeed: 0.3
+    BerserkRange: 3
+    PunchInterval: 3
+    PunchDistance: 10
+    PunchDamageRate: 2.5
+    PunchFieldDuration: 1
+    PunchFieldDamageRate: 0.8
+    PunchBuffDuration: 5
+    PunchBuffDamageRate: 0.3
+    PunchShockRange: 8
+    FrenzyAttackSpeedBonus: 0.2
+    FrenzyAttackRange: {x: 7, y: 5}
+    FrenzyJumpCount: 3
+    FrenzyJumpArea: 6
+    FrenzyJumpDamageRate: 2.2
+    PsychoProjectileInterval: 2
+    PsychoProjectileCount: 2
+    PsychoProjectileDamageRate: 1.5
+    PsychoProjectilePierce: 3
+    PsychoExplodeRange: 4
+    PsychoExplodeDamageRate: 1.8
+    PsychoProjectileSizeMultiplier: 2
+    PsychoFinalDamageBonusRate: 1
+  CurrentStat:
+    Health: 100
+    MaxHealth: 100
+    MoveSpeed: 5
+    AttackDamage: 20
+    AttackSpeed: 0.5
+    SandevistanDuration: 3
+    SandevistanCooldown: 15
+    SandevistanExtraDuration: 1
+    SandevistanCooldownReduceRate: 0.2
+    SandevistanDamageBonusRate: 0.3
+    SandevistanBulletRicochet: 2
+    SandevistanEndBuffDuration: 3
+    SandevistanEndMoveSpeedBonus: 0.3
+    BlinkDistance: 5
+    BlinkCount: 2
+    BlinkInvincibleTime: 1
+    BlinkShockArea: 3
+    BlinkShockDamageRate: 1.5
+    BlinkFieldDuration: 2
+    BlinkFieldRange: 5
+    PlasmaFieldRange: 5
+    PlasmaFieldDamageRate: 0.8
+    LaserDamageBonusRate: 0.5
+    LaserPierceCount: 5
+    MissileFireInterval: 2
+    MissileCount: 3
+    MissileDamageRate: 2
+    HackRange: 8
+    HackCooldown: 8
+    HackTargetCount: 1
+    HackDuration: 2
+    HackDotDamageRate: 1
+    HackDotDuration: 5
+    HackSpreadCount: 3
+    HackSpreadRange: 5
+    HackExplodeCondition: 20
+    HackExplodeDamageRate: 1.5
+    HackSlowRate: 0.3
+    HackSlowDuration: 2
+    HackSlowSpreadCount: 6
+    HackDamageIncreaseRate: 0.3
+    HackFieldCondition: 50
+    HackFieldRange: 8
+    HackFieldDuration: 5
+    HackFieldDamageRate: 1.2
+    HackControlCount: 3
+    HackControlDuration: 5
+    HackControlSpreadCount: 2
+    HackControlExplodeRange: 5
+    HackControlExplodeDamageRate: 2
+    BerserkDuration: 8
+    BerserkCooldown: 12
+    BerserkDamageRate: 0.5
+    BerserkAttackSpeed: 0.3
+    BerserkRange: 3
+    PunchInterval: 3
+    PunchDistance: 10
+    PunchDamageRate: 2.5
+    PunchFieldDuration: 1
+    PunchFieldDamageRate: 0.8
+    PunchBuffDuration: 5
+    PunchBuffDamageRate: 0.3
+    PunchShockRange: 8
+    FrenzyAttackSpeedBonus: 0.2
+    FrenzyAttackRange: {x: 7, y: 5}
+    FrenzyJumpCount: 3
+    FrenzyJumpArea: 6
+    FrenzyJumpDamageRate: 2.2
+    PsychoProjectileInterval: 2
+    PsychoProjectileCount: 2
+    PsychoProjectileDamageRate: 1.5
+    PsychoProjectilePierce: 3
+    PsychoExplodeRange: 4
+    PsychoExplodeDamageRate: 1.8
+    PsychoProjectileSizeMultiplier: 2
+    PsychoFinalDamageBonusRate: 1
+--- !u!114 &4274884020817413833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 523497229797086500}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 616a9a0b86917ca4591fc25a02cd7f23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8338167984531299676
 GameObject:
   m_ObjectHideFlags: 0

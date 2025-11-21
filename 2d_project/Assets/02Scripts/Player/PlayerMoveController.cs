@@ -1,6 +1,6 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-public class PlayerMove : MonoBehaviour
+public class PlayerMoveController : MonoBehaviour
 {
     [SerializeField] private float _speed = 1f;
     private Animator _animator;
@@ -16,12 +16,7 @@ public class PlayerMove : MonoBehaviour
         _spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    private void Update()
-    {
-        HandleMovement();
-    }
-
-    private void HandleMovement()
+    public void HandleMovement()
     {
         float h = Input.GetAxisRaw(HorizontalAxis);
         float v = Input.GetAxisRaw(VerticalAxis);
