@@ -44,7 +44,5 @@ public class PlayerAttackController : MonoBehaviour
         Vector2 direction = (worldPosition - _bulletSpawner.position).normalized;
 
         _bulletSpawner.GetComponent<BulletSpawner>().SpawnBullet(direction);
-
-
     }
 }
