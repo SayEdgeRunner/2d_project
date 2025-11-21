@@ -2,9 +2,9 @@
 
 public class PlayerMoveController : MonoBehaviour
 {
-    [SerializeField] private float _speed = 1f;
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
+    private PlayerStatController _stat;
 
     private const string HorizontalAxis = "Horizontal";
     private const string VerticalAxis = "Vertical";
@@ -14,6 +14,11 @@ public class PlayerMoveController : MonoBehaviour
     {
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    public void Init(PlayerStatController stat)
+    {
+        _stat = stat;
     }
 
     public void HandleMovement()
@@ -43,6 +48,6 @@ public class PlayerMoveController : MonoBehaviour
 
     private void MoveCharacter(Vector2 direction)
     {
-        transform.Translate(direction * _speed * Time.deltaTime);
+        transform.Translate(direction * _stat.CurrentStat.MoveSpeed * Time.deltaTime);
     }
 }

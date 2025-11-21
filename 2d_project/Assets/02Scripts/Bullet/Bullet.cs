@@ -2,7 +2,7 @@
 
 public class Bullet : MonoBehaviour
 {
-    [SerializeField] private float _speed = 3f;
+    [SerializeField] private float _speed = 2f;
     private Vector2 _direction;
 
     public void SetDirection(Vector2 direction)

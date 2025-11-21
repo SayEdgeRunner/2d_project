@@ -7,7 +7,8 @@ public class PlayerStat
     public float MaxHealth = 100f;
     public float MoveSpeed = 5f;   
     public float AttackDamage = 20f;       
-    public float AttackSpeed = 0.5f;         
+    public float AttackSpeed = 0.5f;
+    public float AttackCoolTime = 1f;
 
     public float SandevistanDuration = 3f;  
     public float SandevistanCooldown = 15f;  

@@ -223,7 +223,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe1467eb5726e3942b42fc8375537e27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 1
 --- !u!114 &6403124416702518679
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -236,7 +235,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e841a9195f3ff074f80b17f6f2be5cbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _shootCoolTime: 1.5
   _bullet: {fileID: 6178051976119972146, guid: 643e1463606de8e4b9d48df17db0b5c8, type: 3}
   _firePosition: {fileID: 26744762139814409}
   _camera: {fileID: 0}
@@ -258,6 +256,7 @@ MonoBehaviour:
     MoveSpeed: 5
     AttackDamage: 20
     AttackSpeed: 0.5
+    AttackCoolTime: 1
     SandevistanDuration: 3
     SandevistanCooldown: 15
     SandevistanExtraDuration: 1
@@ -335,6 +334,7 @@ MonoBehaviour:
     MoveSpeed: 5
     AttackDamage: 20
     AttackSpeed: 0.5
+    AttackCoolTime: 1
     SandevistanDuration: 3
     SandevistanCooldown: 15
     SandevistanExtraDuration: 1
