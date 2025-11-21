@@ -106,7 +106,7 @@ namespace Enemy
 
             EnemyEntity enemy = obj.GetComponent<EnemyEntity>();
             enemy.Initialize(_targetTransform);
-            enemy.OnDeath += OnEnemyDeath;
+            enemy.OnDeathComplete += OnEnemyDeath;
 
             _activeEnemies.Add(enemy);
         }
@@ -134,7 +134,7 @@ namespace Enemy
         {
             if (!enemy) return;
 
-            enemy.OnDeath -= OnEnemyDeath;
+            enemy.OnDeathComplete -= OnEnemyDeath;
             _activeEnemies.Remove(enemy);
 
             PrefabPoolManager.Return(enemy.gameObject);
@@ -159,7 +159,7 @@ namespace Enemy
         {
             foreach (var enemy in _activeEnemies)
             {
-                if (enemy) enemy.OnDeath -= OnEnemyDeath;
+                if (enemy) enemy.OnDeathComplete -= OnEnemyDeath;
             }
         }
     }
