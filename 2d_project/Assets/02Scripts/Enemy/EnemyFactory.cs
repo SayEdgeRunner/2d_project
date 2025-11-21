@@ -95,28 +95,9 @@ namespace Enemy
                 return null;
             }
             
-            ApplyStats(enemy, config, healthMultiplier, moveSpeedMultiplier);
-            
-            enemy.Initialize(target);
+            enemy.Initialize(target, config, healthMultiplier, moveSpeedMultiplier);
 
             return enemy;
-        }
-        
-        private void ApplyStats(EnemyEntity enemy, EnemyConfig config, float healthMultiplier = 1f, float moveSpeedMultiplier = 1f)
-        {
-            var healthComponent = enemy.GetComponent<EnemyHealthComponent>();
-            if (healthComponent)
-            {
-                float finalHealth = config.GetFinalHealth(healthMultiplier);
-                healthComponent.SetMaxHealth(finalHealth);
-            }
-            
-            var moveComponent = enemy.GetComponent<EnemyMoveComponent>();
-            if (moveComponent)
-            {
-                float finalSpeed = config.GetFinalMoveSpeed(moveSpeedMultiplier);
-                moveComponent.SetMoveSpeed(finalSpeed);
-            }
         }
         
         public EnemyConfig GetConfig(EEnemyType type)

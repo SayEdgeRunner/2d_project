@@ -18,6 +18,7 @@ namespace Enemy
         private EnemyHealthComponent _healthComponent;
         private EnemyDeathPresenter _deathPresenter;
         private EnemyMoveAIComponent _moveAIComponent;
+        private EnemyMoveComponent _moveComponent;
         private Collider2D[] _colliders;
         private Transform _targetTransform;
         private Coroutine _deathCoroutine;
@@ -30,6 +31,7 @@ namespace Enemy
             _healthComponent = GetComponent<EnemyHealthComponent>();
             _deathPresenter = GetComponent<EnemyDeathPresenter>();
             _moveAIComponent = GetComponent<EnemyMoveAIComponent>();
+            _moveComponent = GetComponent<EnemyMoveComponent>();
             _colliders = GetComponents<Collider2D>();
         }
 
@@ -55,12 +57,24 @@ namespace Enemy
             }
         }
 
-        public void Initialize(Transform target)
+        public void Initialize(Transform target, EnemyConfig config, float healthMultiplier = 1f, float moveSpeedMultiplier = 1f)
         {
             _targetTransform = target;
             if (_moveAIComponent && _targetTransform)
             {
                 _moveAIComponent.Initialize(_targetTransform);
+            }
+            
+            if (_healthComponent)
+            {
+                float finalHealth = config.GetFinalHealth(healthMultiplier);
+                _healthComponent.SetMaxHealth(finalHealth);
+            }
+            
+            if (_moveComponent)
+            {
+                float finalSpeed = config.GetFinalMoveSpeed(moveSpeedMultiplier);
+                _moveComponent.SetMoveSpeed(finalSpeed);
             }
         }
 
