@@ -92,4 +92,9 @@ public class PlayerStat
     public float PsychoExplodeDamageRate = 1.8f;
     public float PsychoProjectileSizeMultiplier = 2f;
     public float PsychoFinalDamageBonusRate = 1.0f;
+
+    public PlayerStat Clone()
+    {
+        return this.MemberwiseClone() as PlayerStat;
+    }
 }

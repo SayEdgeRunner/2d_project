@@ -13,6 +13,14 @@ public class PlayerAttackController : MonoBehaviour
 
     private float _coolTimer = 0;
 
+    private void Awake()
+    {
+        if (_camera == null)
+        {
+            _camera = Camera.main;
+        }
+    }
+
     public void Init(PlayerStatController stat)
     {
         _stat = stat;
