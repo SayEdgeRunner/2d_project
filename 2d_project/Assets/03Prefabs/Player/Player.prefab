@@ -235,8 +235,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _shootCoolTime: 1.5
-  _bullet: {fileID: 523271577020436131, guid: 643e1463606de8e4b9d48df17db0b5c8, type: 3}
+  _bullet: {fileID: 6178051976119972146, guid: 643e1463606de8e4b9d48df17db0b5c8, type: 3}
   _firePosition: {fileID: 26744762139814409}
+  _camera: {fileID: 0}
 --- !u!1 &8338167984531299676
 GameObject:
   m_ObjectHideFlags: 0
