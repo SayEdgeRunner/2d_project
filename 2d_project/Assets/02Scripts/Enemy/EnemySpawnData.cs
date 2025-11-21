@@ -6,16 +6,16 @@ namespace Enemy
     [Serializable]
     public class EnemySpawnData
     {
-        [SerializeField] private EnemyEntity enemyPrefab;
-        [SerializeField] private int weight = 1;
+        [SerializeField] private EnemyEntity _enemyPrefab;
+        [SerializeField] private int _weight;
 
-        public EnemyEntity EnemyPrefab => enemyPrefab;
-        public int Weight => weight;
+        public EnemyEntity EnemyPrefab => _enemyPrefab;
+        public int Weight => _weight;
 
         public EnemySpawnData(EnemyEntity enemyPrefab, int weight)
         {
-            this.enemyPrefab = enemyPrefab;
-            this.weight = Mathf.Max(1, weight);
+            _enemyPrefab = enemyPrefab;
+            _weight = Mathf.Max(1, weight);
         }
     }
 }

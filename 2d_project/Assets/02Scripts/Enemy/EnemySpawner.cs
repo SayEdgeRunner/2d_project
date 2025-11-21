@@ -109,8 +109,6 @@ namespace Enemy
             enemy.OnDeath += OnEnemyDeath;
 
             _activeEnemies.Add(enemy);
-
-            Debug.Log($"[EnemySpawner] Spawned {prefab.name} at {spawnTransform.position}. Active: {_activeEnemies.Count}/{_maxEnemyCount}");
         }
 
         private EnemyEntity SelectRandomEnemyPrefab()
@@ -129,7 +127,7 @@ namespace Enemy
                 }
             }
 
-            return _enemySpawnDataList[_enemySpawnDataList.Length - 1].EnemyPrefab;
+            return _enemySpawnDataList[^1].EnemyPrefab;
         }
 
         private void OnEnemyDeath(EnemyEntity enemy)
@@ -140,8 +138,6 @@ namespace Enemy
             _activeEnemies.Remove(enemy);
 
             PrefabPoolManager.Return(enemy.gameObject);
-
-            Debug.Log($"[EnemySpawner] Enemy died. Active: {_activeEnemies.Count}/{_maxEnemyCount}");
         }
 
         private void OnDrawGizmos()

@@ -70,11 +70,7 @@ public class PrefabPoolManager : MonoBehaviour
             );
 
             SharedPrefabToPool[config.Prefab] = pool;
-
-            Debug.Log($"[PrefabPoolManager] Created pool for {config.Prefab.name} with {config.InitialCount} objects in container '{_poolContainer.name}' from manager '{gameObject.name}'");
         }
-
-        Debug.Log($"[PrefabPoolManager] Total pools initialized: {SharedPrefabToPool.Count}");
     }
 
     public static GameObject Get(GameObject prefab)
