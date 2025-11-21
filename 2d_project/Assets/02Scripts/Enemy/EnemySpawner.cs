@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Core;
 using UnityEditor;
 using UnityEngine;
 
@@ -19,7 +20,7 @@ namespace Enemy
         [SerializeField] private EnemySpawnData[] _enemySpawnDataList;
 
         private float _spawnTimer;
-        private readonly List<EnemyEntity> _activeEnemies = new();
+        private readonly HashSet<EnemyEntity> _activeEnemies = new();
         private bool _isSpawning;
         private int _totalWeight;
 

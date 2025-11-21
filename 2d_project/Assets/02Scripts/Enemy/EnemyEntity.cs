@@ -1,5 +1,5 @@
 using System;
-using Pooling;
+using Pool;
 using UnityEngine;
 
 namespace Enemy
@@ -32,10 +32,6 @@ namespace Enemy
 
         public void OnGetFromPool()
         {
-            if (_targetTransform && _moveAIComponent)
-            {
-                _moveAIComponent.Initialize(_targetTransform);
-            }
         }
 
         public void OnReturnToPool()

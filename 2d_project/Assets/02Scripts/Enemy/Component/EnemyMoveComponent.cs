@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace Enemy
 {
+    [RequireComponent(typeof(Rigidbody2D), typeof(SpriteRenderer))]
     public class EnemyMoveComponent : MonoBehaviour
     {
         [SerializeField] private float _moveSpeed = 3.0f;

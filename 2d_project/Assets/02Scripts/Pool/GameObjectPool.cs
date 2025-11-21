@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Pooling
+namespace Pool
 {
     public class GameObjectPool
     {

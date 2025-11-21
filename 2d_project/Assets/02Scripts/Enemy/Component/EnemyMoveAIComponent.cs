@@ -29,29 +29,16 @@ namespace Enemy
         {
             if (!_targetTransform) return;
 
-            float distance = GetDistanceToTarget();
+            Vector2 directionVector = (Vector2)_targetTransform.position - (Vector2)transform.position;
 
-            if (distance > _stopDistance)
+            if (directionVector.sqrMagnitude > _stopDistance * _stopDistance)
             {
-                Vector2 direction = GetDirectionToTarget();
-                _moveComponent.Move(direction);
+                _moveComponent.Move(directionVector.normalized);
             }
             else
             {
                 _moveComponent.Stop();
             }
-        }
-
-        private Vector2 GetDirectionToTarget()
-        {
-            Vector2 targetPosition = _targetTransform.position;
-            Vector2 enemyPosition = transform.position;
-            return (targetPosition - enemyPosition).normalized;
-        }
-
-        private float GetDistanceToTarget()
-        {
-            return Vector2.Distance(transform.position, _targetTransform.position);
         }
     }
 }

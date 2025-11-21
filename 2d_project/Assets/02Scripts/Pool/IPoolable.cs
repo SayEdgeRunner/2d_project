@@ -1,4 +1,4 @@
-namespace Pooling
+namespace Pool
 {
     public interface IPoolable
     {

@@ -154,10 +154,10 @@ MonoBehaviour:
   _spawnOnStart: 1
   _targetTransform: {fileID: 1141635052}
   _enemySpawnDataList:
-  - enemyPrefab: {fileID: 8322424453940438902, guid: 51bfaff3d4b0843ccb024e93a25d41b1, type: 3}
-    weight: 1
-  - enemyPrefab: {fileID: 2322933698033059262, guid: bbb63ffc3e8bc44858b84ea4fa6b9ebe, type: 3}
-    weight: 1
+  - _enemyPrefab: {fileID: 8322424453940438902, guid: 51bfaff3d4b0843ccb024e93a25d41b1, type: 3}
+    _weight: 1
+  - _enemyPrefab: {fileID: 2322933698033059262, guid: bbb63ffc3e8bc44858b84ea4fa6b9ebe, type: 3}
+    _weight: 1
 --- !u!4 &318308524
 Transform:
   m_ObjectHideFlags: 0
@@ -528,10 +528,8 @@ MonoBehaviour:
   _poolConfigurations:
   - _prefab: {fileID: 1251622687332111883, guid: 51bfaff3d4b0843ccb024e93a25d41b1, type: 3}
     _initialCount: 10
-    _expandable: 1
   - _prefab: {fileID: 4764015819681133763, guid: bbb63ffc3e8bc44858b84ea4fa6b9ebe, type: 3}
     _initialCount: 10
-    _expandable: 1
   _poolContainer: {fileID: 1940746978}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
