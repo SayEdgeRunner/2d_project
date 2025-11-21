@@ -6,7 +6,7 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
     private static T _instance;
 
     // 멀티스레드 환경에서 동시 접근을 방지하기 위한 lock 객체
-    private static object _lockObj = new object();
+    //private static object _lockObj = new object();
 
     // 애플리케이션 종료 시 인스턴스 접근을 방지하는 플래그
     private static bool _applicationIsQuitting = false;
@@ -24,35 +24,30 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
             }
 
             // 멀티스레드 환경에서 안전하게 인스턴스 생성
-            lock (_lockObj)
+            if (_instance == null)
             {
+                // 씬에서 기존 인스턴스 찾기
+                _instance = FindObjectOfType<T>();
+
+                // 씬에 인스턴스가 없으면 새로 생성
                 if (_instance == null)
                 {
-                    // 씬에서 기존 인스턴스 찾기
-                    _instance = FindObjectOfType<T>();
+                    GameObject singleton = new GameObject();
+                    _instance = singleton.AddComponent<T>();
+                    singleton.name = $"[Singleton] {typeof(T)}";
 
-                    // 씬에 인스턴스가 없으면 새로 생성
-                    if (_instance == null)
-                    {
-                        GameObject singleton = new GameObject();
-                        _instance = singleton.AddComponent<T>();
-                        singleton.name = $"[Singleton] {typeof(T)}";
-
-                        // 씬 전환 시에도 파괴되지 않도록 설정
-                        DontDestroyOnLoad(singleton);
-                        Debug.Log($"[Singleton] '{typeof(T)}' 인스턴스가 생성되었습니다.");
-                    }
+                    // 씬 전환 시에도 파괴되지 않도록 설정
+                    DontDestroyOnLoad(singleton);
+                    Debug.Log($"[Singleton] '{typeof(T)}' 인스턴스가 생성되었습니다.");
                 }
-
-                return _instance;
             }
+
+            return _instance;
         }
     }
 
     protected virtual void Awake()
     {
-        lock (_lockObj)
-        {
             // 첫 번째 인스턴스인 경우
             if (_instance == null)
             {
@@ -65,16 +60,9 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
                 Debug.LogWarning($"[Singleton] '{typeof(T)}'의 중복 인스턴스가 발견되었습니다. 파괴합니다.");
                 Destroy(gameObject); // 중복 인스턴스 제거
             }
-        }
     }
 
-    protected virtual void OnDestroy()
-    {
-        if (_instance == this)
-        {
-            _instance = null;
-        }
-    }
+
 
     private void OnApplicationQuit()
     {
