@@ -102,8 +102,13 @@ namespace Enemy
         
         public EnemyConfig GetConfig(EEnemyType type)
         {
-            _configMap.TryGetValue(type, out EnemyConfig config);
-            return config;
+            if (_configMap.TryGetValue(type, out EnemyConfig config))
+            {
+                return config;
+            }
+
+            Debug.LogWarning($"[EnemyFactory] Config not found for enemy type: {type}.");
+            return null;
         }
 
         public IReadOnlyDictionary<EEnemyType, EnemyConfig> GetAllConfigs()
