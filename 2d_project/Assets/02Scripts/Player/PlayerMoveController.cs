@@ -1,10 +1,12 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-public class PlayerMove : MonoBehaviour
+[RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(SpriteRenderer))]
+public class PlayerMoveController : MonoBehaviour
 {
-    [SerializeField] private float _speed = 1f;
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
+    private PlayerStatController _stat;
 
     private const string HorizontalAxis = "Horizontal";
     private const string VerticalAxis = "Vertical";
@@ -16,12 +18,12 @@ public class PlayerMove : MonoBehaviour
         _spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    private void Update()
+    public void Init(PlayerStatController stat)
     {
-        HandleMovement();
+        _stat = stat;
     }
 
-    private void HandleMovement()
+    public void HandleMovement()
     {
         float h = Input.GetAxisRaw(HorizontalAxis);
         float v = Input.GetAxisRaw(VerticalAxis);
@@ -48,6 +50,6 @@ public class PlayerMove : MonoBehaviour
 
     private void MoveCharacter(Vector2 direction)
     {
-        transform.Translate(direction * _speed * Time.deltaTime);
+        transform.Translate(direction * _stat.CurrentStat.MoveSpeed * Time.deltaTime);
     }
 }
