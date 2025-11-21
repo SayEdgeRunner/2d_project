@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Core;
+using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
@@ -23,7 +24,7 @@ public class Bullet : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Enemy") == false) return;
-        
-        Destroy(gameObject);
+
+        PrefabPoolManager.Return(gameObject);
     }
 }
