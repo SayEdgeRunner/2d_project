@@ -2,10 +2,6 @@ using UnityEngine;
 
 namespace Enemy
 {
-    /// <summary>
-    /// 적 사망 연출을 담당하는 컴포넌트
-    /// 애니메이션, 이펙트, 사운드만 재생 (생명주기 관리는 EnemyEntity가 담당)
-    /// </summary>
     public class EnemyDeathPresenter : MonoBehaviour
     {
         [Header("애니메이션")]
@@ -19,9 +15,6 @@ namespace Enemy
         [Header("사운드")]
         [SerializeField] private AudioClip _deathSound;
 
-        /// <summary>
-        /// 사망 연출 재생 (Fire and Forget)
-        /// </summary>
         public void PlayDeathEffect()
         {
             PlayDeathAnimation();
