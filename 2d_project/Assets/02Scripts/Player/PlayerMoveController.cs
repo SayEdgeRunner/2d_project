@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+[RequireComponent(typeof(SpriteRenderer))]
+[RequireComponent(typeof(PlayerStatController))]
 public class PlayerMoveController : MonoBehaviour
 {
     private Animator _animator;

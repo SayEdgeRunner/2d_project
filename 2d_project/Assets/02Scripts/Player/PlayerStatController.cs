@@ -9,7 +9,6 @@ public class PlayerStatController : MonoBehaviour
 
     private void Awake()
     {
-        _currentStat = new PlayerStat();
         InitStat();
     }
 
