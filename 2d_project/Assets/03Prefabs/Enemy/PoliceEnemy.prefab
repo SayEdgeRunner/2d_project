@@ -36,18 +36,10 @@ PrefabInstance:
       propertyPath: m_SpriteTilingProperty.oldSize.y
       value: 0.75
       objectReference: {fileID: 0}
-    - target: {fileID: 1406648490457886792, guid: f65486332233f43699896dcb20f6fdc0, type: 3}
-      propertyPath: _stopDistance
-      value: 0.5
-      objectReference: {fileID: 0}
     - target: {fileID: 2931732663354472291, guid: f65486332233f43699896dcb20f6fdc0, type: 3}
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 999081995, guid: 1c6c04082bec34efa8241ade47dd6962, type: 3}
-    - target: {fileID: 2931732663354472291, guid: f65486332233f43699896dcb20f6fdc0, type: 3}
-      propertyPath: m_SpriteSortPoint
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6816355017509226043, guid: f65486332233f43699896dcb20f6fdc0, type: 3}
       propertyPath: m_Name
       value: PoliceEnemy

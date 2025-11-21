@@ -40,10 +40,6 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: -1079130513, guid: c2ac463ccacfa407688837fcb140cde8, type: 3}
-    - target: {fileID: 2931732663354472291, guid: f65486332233f43699896dcb20f6fdc0, type: 3}
-      propertyPath: m_SpriteSortPoint
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6816355017509226043, guid: f65486332233f43699896dcb20f6fdc0, type: 3}
       propertyPath: m_Name
       value: SamuraiEnemy

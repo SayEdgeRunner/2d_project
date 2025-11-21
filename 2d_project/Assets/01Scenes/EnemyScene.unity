@@ -119,6 +119,53 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &68681943
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 68681945}
+  - component: {fileID: 68681944}
+  m_Layer: 0
+  m_Name: EnemyFactory
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &68681944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 68681943}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 224d3581d240248ccb84928768f40518, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _enemyConfigs:
+  - {fileID: 11400000, guid: fd0eacef53e9a4c679ff34b54651d2c1, type: 2}
+  - {fileID: 11400000, guid: cd091ba40c0cf475880d32f6573152d1, type: 2}
+--- !u!4 &68681945
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 68681943}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &318308522
 GameObject:
   m_ObjectHideFlags: 0
@@ -153,11 +200,8 @@ MonoBehaviour:
   _maxEnemyCount: 10
   _spawnOnStart: 1
   _targetTransform: {fileID: 1141635052}
-  _enemySpawnDataList:
-  - _enemyPrefab: {fileID: 8322424453940438902, guid: 51bfaff3d4b0843ccb024e93a25d41b1, type: 3}
-    _weight: 1
-  - _enemyPrefab: {fileID: 2322933698033059262, guid: bbb63ffc3e8bc44858b84ea4fa6b9ebe, type: 3}
-    _weight: 1
+  _enemyFactory: {fileID: 68681944}
+  _spawnableTypes: 0000000001000000
 --- !u!4 &318308524
 Transform:
   m_ObjectHideFlags: 0
@@ -540,3 +584,4 @@ SceneRoots:
   - {fileID: 1141635052}
   - {fileID: 1940746978}
   - {fileID: 318308524}
+  - {fileID: 68681945}

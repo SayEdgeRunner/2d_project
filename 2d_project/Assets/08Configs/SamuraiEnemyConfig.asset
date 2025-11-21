@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3154c6a69b54c42339074bfe340e09cb, type: 3}
+  m_Name: SamuraiEnemyConfig
+  m_EditorClassIdentifier: 
+  _enemyType: 1
+  _enemyPrefab: {fileID: 4764015819681133763, guid: bbb63ffc3e8bc44858b84ea4fa6b9ebe, type: 3}
+  _health: 1000
+  _moveSpeed: 2.5
+  _experience: 100
+  _score: 200
+  _attacks:
+  - AttackName: "\uADFC\uC811 \uACF5\uACA9"
+    Type: 0
+    Damage: 30
+    AttackRadius: 2
+  - AttackName: "\uC6D0\uAC70\uB9AC \uACF5\uACA9"
+    Type: 1
+    Damage: 20
+    AttackRadius: 15
+  _spawnWeight: 10

@@ -47,6 +47,14 @@ namespace Enemy
             OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
         }
 
+        public void SetMaxHealth(float maxHealth)
+        {
+            _maxHealth = Mathf.Max(1f, maxHealth);
+            _currentHealth = _maxHealth;
+            _isDead = false;
+            OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
+        }
+
         public void ResetHealth()
         {
             _currentHealth = _maxHealth;

@@ -16,6 +16,11 @@ namespace Enemy
             _spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
+        public void SetMoveSpeed(float moveSpeed)
+        {
+            _moveSpeed = Mathf.Max(0.1f, moveSpeed);
+        }
+
         public void Move(Vector2 direction)
         {
             if (direction.sqrMagnitude <= 0f) return;

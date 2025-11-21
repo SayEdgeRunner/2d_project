@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Core;
+using System.Linq;
 using UnityEngine;
 
 namespace Enemy
@@ -14,13 +14,15 @@ namespace Enemy
 
         [Header("참조")]
         [SerializeField] private Transform _targetTransform;
+        [SerializeField] private EnemyFactory _enemyFactory;
 
-        [Header("적 타입 및 가중치")]
-        [SerializeField] private EnemySpawnData[] _enemySpawnDataList;
+        [Header("스폰할 적 타입 (비어있으면 모든 타입)")]
+        [SerializeField] private EEnemyType[] _spawnableTypes;
 
         private float _spawnTimer;
         private readonly HashSet<EnemyEntity> _activeEnemies = new();
         private bool _isSpawning;
+        private List<EnemyConfig> _spawnConfigs;
         private int _totalWeight;
 
         private void Start()
@@ -30,13 +32,13 @@ namespace Enemy
                 Debug.LogWarning($"[EnemySpawner] Target Transform is not assigned on {gameObject.name}");
             }
 
-            if (_enemySpawnDataList == null || _enemySpawnDataList.Length == 0)
+            if (!_enemyFactory)
             {
-                Debug.LogError($"[EnemySpawner] Enemy Spawn Data List is empty on {gameObject.name}");
+                Debug.LogError($"[EnemySpawner] Enemy Factory is not assigned on {gameObject.name}");
                 return;
             }
 
-            CalculateTotalWeight();
+            InitializeSpawnConfigs();
 
             if (_spawnOnStart)
             {
@@ -44,12 +46,40 @@ namespace Enemy
             }
         }
 
+        private void InitializeSpawnConfigs()
+        {
+            var allConfigs = _enemyFactory.GetAllConfigs();
+
+            if (_spawnableTypes != null && _spawnableTypes.Length > 0)
+            {
+                List<EnemyConfig> spawnConfigs = new List<EnemyConfig>();
+                foreach (var type in _spawnableTypes)
+                {
+                    if (allConfigs.ContainsKey(type)) spawnConfigs.Add(allConfigs[type]);
+                }
+
+                _spawnConfigs = spawnConfigs;
+            }
+            else
+            {
+                _spawnConfigs = allConfigs.Values.ToList();
+            }
+
+            if (_spawnConfigs.Count == 0)
+            {
+                Debug.LogError($"[EnemySpawner] No spawn configs available on {gameObject.name}");
+                return;
+            }
+
+            CalculateTotalWeight();
+        }
+
         private void CalculateTotalWeight()
         {
             _totalWeight = 0;
-            foreach (var spawnData in _enemySpawnDataList)
+            foreach (var config in _spawnConfigs)
             {
-                _totalWeight += spawnData.Weight;
+                _totalWeight += config.SpawnWeight;
             }
         }
 
@@ -59,7 +89,7 @@ namespace Enemy
 
             _spawnTimer -= Time.deltaTime;
 
-            if (_spawnTimer > 0f || !CanSpawn()) return;
+            if (!CanSpawn()) return;
             SpawnEnemy();
             _spawnTimer = _spawnInterval;
         }
@@ -82,52 +112,48 @@ namespace Enemy
 
         private bool CanSpawn()
         {
-            return _activeEnemies.Count < _maxEnemyCount;
+            return _spawnTimer <= 0f && _activeEnemies.Count < _maxEnemyCount;
         }
 
         private void SpawnEnemy()
         {
-            EnemyEntity prefab = SelectRandomEnemyPrefab();
-            if (!prefab)
-            {
-                Debug.LogError($"[EnemySpawner] Failed to select enemy prefab");
-                return;
-            }
-
-            GameObject obj = PrefabPoolManager.Get(prefab.gameObject);
-            if (!obj)
-            {
-                Debug.LogWarning($"[EnemySpawner] Failed to get enemy from pool: {prefab.name}");
-                return;
-            }
+            EEnemyType selectedType = SelectRandomEnemyType();
 
             Transform spawnTransform = _spawnPoint ? _spawnPoint : transform;
-            obj.transform.SetPositionAndRotation(spawnTransform.position, spawnTransform.rotation);
 
-            EnemyEntity enemy = obj.GetComponent<EnemyEntity>();
-            enemy.Initialize(_targetTransform);
+            EnemyEntity enemy = _enemyFactory.Create(selectedType, spawnTransform.position, _targetTransform);
+
+            if (!enemy)
+            {
+                Debug.LogWarning($"[EnemySpawner] Failed to create enemy: {selectedType}");
+                return;
+            }
+
             enemy.OnDeathComplete += OnEnemyDeath;
-
             _activeEnemies.Add(enemy);
         }
 
-        private EnemyEntity SelectRandomEnemyPrefab()
+        private EEnemyType SelectRandomEnemyType()
         {
-            if (_totalWeight <= 0) return null;
+            if (_totalWeight <= 0 || _spawnConfigs.Count == 0)
+            {
+                Debug.LogError("[EnemySpawner] Cannot select enemy type: invalid weight or configs");
+                return EEnemyType.Police;
+            }
 
             int randomValue = Random.Range(0, _totalWeight);
             int cumulativeWeight = 0;
 
-            foreach (var spawnData in _enemySpawnDataList)
+            foreach (var config in _spawnConfigs)
             {
-                cumulativeWeight += spawnData.Weight;
+                cumulativeWeight += config.SpawnWeight;
                 if (randomValue < cumulativeWeight)
                 {
-                    return spawnData.EnemyPrefab;
+                    return config.EnemyType;
                 }
             }
-
-            return null;
+            
+            return _spawnConfigs[0].EnemyType;
         }
 
         private void OnEnemyDeath(EnemyEntity enemy)
@@ -137,7 +163,7 @@ namespace Enemy
             enemy.OnDeathComplete -= OnEnemyDeath;
             _activeEnemies.Remove(enemy);
 
-            PrefabPoolManager.Return(enemy.gameObject);
+            Core.PrefabPoolManager.Return(enemy.gameObject);
         }
 
         private void OnDrawGizmos()
