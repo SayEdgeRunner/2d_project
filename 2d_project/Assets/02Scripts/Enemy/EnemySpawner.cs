@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Core;
-using UnityEditor;
 using UnityEngine;
 
 namespace Enemy
@@ -128,7 +127,7 @@ namespace Enemy
                 }
             }
 
-            return _enemySpawnDataList[^1].EnemyPrefab;
+            return null;
         }
 
         private void OnEnemyDeath(EnemyEntity enemy)
@@ -149,7 +148,7 @@ namespace Enemy
             Gizmos.DrawWireSphere(_spawnPoint.position, 0.5f);
 
             #if UNITY_EDITOR
-            Handles.Label(
+            UnityEditor.Handles.Label(
                 _spawnPoint.position + Vector3.up,
                 $"Active: {_activeEnemies.Count}/{_maxEnemyCount}"
             );
