@@ -8,11 +8,9 @@ public class PoolConfiguration
 {
     [SerializeField] private GameObject _prefab;
     [SerializeField] private int _initialCount = 10;
-    [SerializeField] private bool _expandable = true;
 
     public GameObject Prefab => _prefab;
     public int InitialCount => _initialCount;
-    public bool Expandable => _expandable;
 }
 
 public class PrefabPoolManager : MonoBehaviour
