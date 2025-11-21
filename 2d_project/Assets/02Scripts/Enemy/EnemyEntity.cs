@@ -6,12 +6,9 @@ using UnityEngine;
 
 namespace Enemy
 {
-    [RequireComponent(typeof(EnemyMoveAIComponent), typeof(EnemyHealthComponent))]
+    [RequireComponent(typeof(EnemyMoveAIComponent), typeof(EnemyHealthComponent), typeof(EnemyDeathPresenter))]
     public class EnemyEntity : MonoBehaviour, IPoolable, IDamageable
     {
-        /// <summary>
-        /// 적이 완전히 사망하여 풀로 반환될 준비가 되었을 때 발생하는 이벤트
-        /// </summary>
         public event Action<EnemyEntity> OnDeathComplete;
 
         [Header("Debug")]
@@ -159,5 +156,39 @@ namespace Enemy
         {
             // 정리 작업
         }
+
+        // ===== 테스트용 메서드 =====
+        #if UNITY_EDITOR
+        [ContextMenu("Test: Take 10 Damage")]
+        private void TestDamage10()
+        {
+            TakeDamage(10f);
+        }
+
+        [ContextMenu("Test: Take 50 Damage")]
+        private void TestDamage50()
+        {
+            TakeDamage(50f);
+        }
+
+        [ContextMenu("Test: Take 100 Damage (Kill)")]
+        private void TestDamageKill()
+        {
+            TakeDamage(100f);
+        }
+
+        [ContextMenu("Test: Heal 30 HP")]
+        private void TestHeal()
+        {
+            _healthComponent?.Heal(30f);
+        }
+
+        [ContextMenu("Test: Reset Health")]
+        private void TestResetHealth()
+        {
+            _healthComponent?.ResetHealth();
+            _lifeState = EnemyLifeState.Alive;
+        }
+        #endif
     }
 }

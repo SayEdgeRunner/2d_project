@@ -16,6 +16,8 @@ GameObject:
   - component: {fileID: 3094239830030992273}
   - component: {fileID: 1406648490457886792}
   - component: {fileID: 4375552735004735302}
+  - component: {fileID: 4730716890426979394}
+  - component: {fileID: 127530311474582094}
   m_Layer: 0
   m_Name: BaseEnemy
   m_TagString: Untagged
@@ -213,7 +215,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a9b224bd2aaa47dd8b1870afd749614, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _stopDistance: 0
+  _stopDistance: 0.5
 --- !u!114 &4375552735004735302
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -226,4 +228,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65a9bbd04caec4c1b8010f49f0afb1a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _targetTransform: {fileID: 0}
+  _lifeState: 0
+  _deathDelay: 2
+--- !u!114 &4730716890426979394
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6816355017509226043}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3ddf592c617245f58b789a6d82a7f54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _maxHealth: 100
+--- !u!114 &127530311474582094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6816355017509226043}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d3115a66eb5042649ec7b5a53446067, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _animator: {fileID: 8889839147062394828}
+  _deathAnimationTrigger: Death
+  _deathEffectPrefab: {fileID: 0}
+  _effectSpawnPoint: {fileID: 0}
+  _deathSound: {fileID: 0}
