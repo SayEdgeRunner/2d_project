@@ -3,8 +3,7 @@
 public class PlayerAttackController : MonoBehaviour
 {
     [Header("총알")]
-    [SerializeField] private Bullet _bullet;
-    [SerializeField] private Transform _firePosition;
+    [SerializeField] private BulletSpawner _bulletSpawner;
 
     [Header("카메라")]
     [SerializeField] private Camera _camera;
@@ -42,9 +41,8 @@ public class PlayerAttackController : MonoBehaviour
     {
         Vector3 cursorPosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, -_camera.transform.position.z);
         Vector3 worldPosition = _camera.ScreenToWorldPoint(cursorPosition);
-        Vector2 direction = (worldPosition - _firePosition.position).normalized;
+        Vector2 direction = (worldPosition - _bulletSpawner.transform.position).normalized;
 
-        Bullet bullet = Instantiate(_bullet, _firePosition.position, Quaternion.identity);
-        bullet.SetDirection(direction);
+        _bulletSpawner.SpawnBullet(direction, _stat);
     }
 }

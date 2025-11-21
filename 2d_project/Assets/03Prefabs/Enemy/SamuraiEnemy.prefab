@@ -48,13 +48,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: SamuraiEnemy
       objectReference: {fileID: 0}
+    - target: {fileID: 6816355017509226043, guid: f65486332233f43699896dcb20f6fdc0, type: 3}
+      propertyPath: m_TagString
+      value: Enemy
+      objectReference: {fileID: 0}
     - target: {fileID: 8480602124409621872, guid: f65486332233f43699896dcb20f6fdc0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 1.6727035
       objectReference: {fileID: 0}
     - target: {fileID: 8480602124409621872, guid: f65486332233f43699896dcb20f6fdc0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.49
+      value: 0.23237102
       objectReference: {fileID: 0}
     - target: {fileID: 8480602124409621872, guid: f65486332233f43699896dcb20f6fdc0, type: 3}
       propertyPath: m_LocalPosition.z
