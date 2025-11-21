@@ -12,7 +12,7 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
     private static bool _applicationIsQuitting = false;
 
 
-    public static T _Instance
+    public static T Instance
     {
         get
         {
@@ -29,7 +29,7 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
                 if (_instance == null)
                 {
                     // 씬에서 기존 인스턴스 찾기
-                    _instance = (T)FindObjectOfType(typeof(T));
+                    _instance = FindObjectOfType<T>();
 
                     // 씬에 인스턴스가 없으면 새로 생성
                     if (_instance == null)
@@ -51,26 +51,33 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 
     protected virtual void Awake()
     {
-        // 첫 번째 인스턴스인 경우
-        if (_instance == null)
+        lock (_lockObj)
         {
-            _instance = this as T;
-            DontDestroyOnLoad(gameObject); // 씬 전환 시 유지
-        }
-        // 이미 인스턴스가 존재하는 경우 (중복 방지)
-        else if (_instance != this)
-        {
-            Debug.LogWarning($"[Singleton] '{typeof(T)}'의 중복 인스턴스가 발견되었습니다. 파괴합니다.");
-            Destroy(gameObject); // 중복 인스턴스 제거
+            // 첫 번째 인스턴스인 경우
+            if (_instance == null)
+            {
+                _instance = this as T;
+                DontDestroyOnLoad(gameObject); // 씬 전환 시 유지
+            }
+            // 이미 인스턴스가 존재하는 경우 (중복 방지)
+            else if (_instance != this)
+            {
+                Debug.LogWarning($"[Singleton] '{typeof(T)}'의 중복 인스턴스가 발견되었습니다. 파괴합니다.");
+                Destroy(gameObject); // 중복 인스턴스 제거
+            }
         }
     }
 
     protected virtual void OnDestroy()
     {
-        // 이 인스턴스가 파괴될 때 종료 플래그 설정
         if (_instance == this)
         {
-            _applicationIsQuitting = true;
+            _instance = null;
         }
+    }
+
+    private void OnApplicationQuit()
+    {
+        _applicationIsQuitting = true;
     }
 }
