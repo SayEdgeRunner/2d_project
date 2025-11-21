@@ -1,23 +1,26 @@
-using Redcode.Pools;
+using System;
+using Pooling;
 using UnityEngine;
 
 namespace Enemy
 {
     [RequireComponent(typeof(EnemyMoveAIComponent))]
-    public class EnemyEntity : MonoBehaviour, IPoolObject
+    public class EnemyEntity : MonoBehaviour, IPoolable
     {
-        [SerializeField] private Transform _targetTransform;
+        public event Action<EnemyEntity> OnDeath;
 
         private EnemyMoveAIComponent _moveAIComponent;
+        private Transform _targetTransform;
 
         private void Awake()
         {
             _moveAIComponent = GetComponent<EnemyMoveAIComponent>();
         }
 
-        private void Start()
+        public void Initialize(Transform target)
         {
-            if (_targetTransform != null)
+            _targetTransform = target;
+            if (_moveAIComponent && _targetTransform)
             {
                 _moveAIComponent.Initialize(_targetTransform);
             }
@@ -27,8 +30,21 @@ namespace Enemy
         {
         }
 
-        public void OnGettingFromPool()
+        public void OnGetFromPool()
         {
+            if (_targetTransform && _moveAIComponent)
+            {
+                _moveAIComponent.Initialize(_targetTransform);
+            }
+        }
+
+        public void OnReturnToPool()
+        {
+        }
+
+        public void Die()
+        {
+            OnDeath?.Invoke(this);
         }
     }
 }
