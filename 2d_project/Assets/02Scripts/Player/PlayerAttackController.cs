@@ -1,24 +1,20 @@
-using System.Collections;
+Ôªøusing System.Collections;
 using System.Threading;
 using UnityEngine;
 
 public class PlayerAttackController : MonoBehaviour
 {
-    [Header("∞¯∞›")]
+    [Header("Í≥µÍ≤©")]
     [SerializeField] private float _shootCoolTime = 2f;
     private float _shootTimer = 0;
 
-    [Header("√—æÀ")]
-    [SerializeField] private GameObject _bullet;
+    [Header("Ï¥ùÏïå")]
+    [SerializeField] private Bullet _bullet;
     [SerializeField] private Transform _firePosition;
 
-    private Camera _camera;
+    [Header("Ïπ¥Î©îÎùº")]
+    [SerializeField] private Camera _camera;
 
-
-    private void Awake()
-    {
-        _camera = Camera.main;
-    }
 
     private void Update()
     {
@@ -41,8 +37,7 @@ public class PlayerAttackController : MonoBehaviour
         Vector3 mouseWorldPosition = _camera.ScreenToWorldPoint(cursorPosition);
         Vector2 direction = (mouseWorldPosition - _firePosition.position).normalized;
 
-        var bulletObject = Instantiate(_bullet, _firePosition.position, Quaternion.identity);
-        Bullet bullet = bulletObject.GetComponent<Bullet>();
+        Bullet bullet = Instantiate(_bullet, _firePosition.position, Quaternion.identity);
         bullet.SetDirection(direction);
     }
 }
