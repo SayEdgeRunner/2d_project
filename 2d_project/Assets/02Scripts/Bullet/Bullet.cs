@@ -6,12 +6,16 @@ public class Bullet : MonoBehaviour
     [SerializeField] private float _speed = 2f;
     [SerializeField] private float _lifeTime = 5f;
 
+    private PlayerStatController _stat;
+
     private Vector2 _direction;
     private float _lifeTimer = 0;
 
-    public void SetDirection(Vector2 direction)
+
+    public void Init(Vector2 direction, PlayerStatController stat)
     {
         _direction = direction;
+        _stat = stat;
     }
 
     private void OnEnable()
@@ -40,7 +44,15 @@ public class Bullet : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        Hit(collision);
+    }
+
+    private void Hit(Collider2D collision)
+    {
         if (collision.CompareTag("Enemy") == false) return;
+
+        IDamageable damageable = collision.GetComponent<IDamageable>();
+        damageable?.TakeDamage(_stat.CurrentStat.AttackDamage);
 
         PrefabPoolManager.Return(gameObject);
     }

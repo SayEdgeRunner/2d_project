@@ -5,7 +5,7 @@ public class BulletSpawner : MonoBehaviour
 {
     [SerializeField] private GameObject _bullet;
 
-    public void SpawnBullet(Vector2 direction)
+    public void SpawnBullet(Vector2 direction, PlayerStatController stat)
     {
         GameObject bulletPrefab = PrefabPoolManager.Get(_bullet);
         if (bulletPrefab == null) return;
@@ -14,6 +14,6 @@ public class BulletSpawner : MonoBehaviour
         bulletPrefab.SetActive(true);
 
         Bullet bullet = bulletPrefab.GetComponent<Bullet>();
-        bullet.SetDirection(direction);
+        bullet.Init(direction, stat);
     }
 }
