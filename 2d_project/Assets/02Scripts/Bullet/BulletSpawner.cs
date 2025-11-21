@@ -11,9 +11,16 @@ public class BulletSpawner : MonoBehaviour
         if (bulletPrefab == null) return;
 
         bulletPrefab.transform.position = transform.position;
-        bulletPrefab.SetActive(true);
 
-        Bullet bullet = bulletPrefab.GetComponent<Bullet>();
-        bullet.Init(direction, stat);
+        if (bulletPrefab.TryGetComponent<Bullet>(out var bullet))
+        {
+            bullet.Init(direction, stat);
+            bulletPrefab.SetActive(true);
+        }
+        else
+        {
+            Debug.LogError($"The prefab '{_bullet.name}' is missing the Bullet component.", gameObject);
+            PrefabPoolManager.Return(bulletPrefab);
+        }
     }
 }

@@ -8,7 +8,6 @@ public class PlayerController : MonoBehaviour
     private PlayerAttackController _attack;
     private PlayerMoveController _move;
     private PlayerStatController _stat;
-    private Bullet _bullet;
 
     private void Awake()
     {
