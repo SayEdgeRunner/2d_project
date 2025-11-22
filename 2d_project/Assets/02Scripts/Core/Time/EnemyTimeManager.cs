@@ -7,7 +7,9 @@ namespace Core
     public class EnemyTimeManager : Singleton<EnemyTimeManager>
     {
         private float _timeScale = 1f;
-        private readonly HashSet<ITimeScalable> _scalables = new();
+        private readonly HashSet<ITimeScalable> _scalableSet = new();  // O(1) 중복 체크용
+        private readonly List<ITimeScalable> _scalableList = new();    // 할당 없는 순회용
+        private readonly Dictionary<float, WaitForSeconds> _waitCache = new();
         private Coroutine _restoreCoroutine;
         
         public float TimeScale => _timeScale;
@@ -15,18 +17,18 @@ namespace Core
         
         public void Register(ITimeScalable scalable)
         {
-            if (scalable != null)
+            if (scalable != null && _scalableSet.Add(scalable))
             {
-                _scalables.Add(scalable);
+                _scalableList.Add(scalable);
                 scalable.SetTimeScale(_timeScale);
             }
         }
 
         public void Unregister(ITimeScalable scalable)
         {
-            if (scalable != null)
+            if (scalable != null && _scalableSet.Remove(scalable))
             {
-                _scalables.Remove(scalable);
+                _scalableList.Remove(scalable);
             }
         }
 
@@ -46,9 +48,9 @@ namespace Core
         {
             _timeScale = Mathf.Clamp(scale, 0f, 2f);
 
-            foreach (var scalable in _scalables)
+            for (int i = 0; i < _scalableList.Count; i++)
             {
-                scalable.SetTimeScale(_timeScale);
+                _scalableList[i].SetTimeScale(_timeScale);
             }
         }
 
@@ -75,14 +77,26 @@ namespace Core
 
         private IEnumerator RestoreAfterDelay(float duration, float targetScale)
         {
-            yield return new WaitForSeconds(duration);
+            yield return GetWaitForSeconds(duration);
             SetTimeScale(targetScale);
             _restoreCoroutine = null;
         }
 
+        private WaitForSeconds GetWaitForSeconds(float duration)
+        {
+            if (!_waitCache.TryGetValue(duration, out var wait))
+            {
+                wait = new WaitForSeconds(duration);
+                _waitCache[duration] = wait;
+            }
+            return wait;
+        }
+
         protected override void OnDestroy()
         {
-            _scalables.Clear();
+            _scalableSet.Clear();
+            _scalableList.Clear();
+            _waitCache.Clear();
             base.OnDestroy();
         }
     }

@@ -77,10 +77,9 @@ namespace Enemy
             _moveSpeed = _baseMoveSpeed;
         }
         
-        public BaseEnemyAttackPattern[] GetAllAttacks()
+        public IReadOnlyList<BaseEnemyAttackPattern> GetAllAttacks()
         {
-            if (_attacks == null) return System.Array.Empty<BaseEnemyAttackPattern>();
-            return _attacks.ToArray();
+            return _attacks;
         }
 
         public BaseEnemyAttackPattern GetAttackByIndex(int index)
@@ -114,15 +113,24 @@ namespace Enemy
             if (_attacks == null)
                 return null;
 
-            return _attacks.Find(attack => attack is T) as T;
+            for (int i = 0; i < _attacks.Count; i++)
+            {
+                if (_attacks[i] is T typed)
+                    return typed;
+            }
+            return null;
         }
 
-        public BaseEnemyAttackPattern[] GetAttacksByType<T>() where T : BaseEnemyAttackPattern
+        public void GetAttacksByType<T>(List<T> results) where T : BaseEnemyAttackPattern
         {
             if (_attacks == null)
-                return System.Array.Empty<BaseEnemyAttackPattern>();
+                return;
 
-            return _attacks.FindAll(attack => attack is T).ToArray();
+            for (int i = 0; i < _attacks.Count; i++)
+            {
+                if (_attacks[i] is T typed)
+                    results.Add(typed);
+            }
         }
 
 #if UNITY_EDITOR

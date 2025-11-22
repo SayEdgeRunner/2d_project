@@ -1,9 +1,14 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Enemy
 {
     public abstract class AttackShape : ScriptableObject
     {
+        protected ContactFilter2D _contactFilter;
+        protected bool _contactFilterInitialized;
+        protected LayerMask _cachedLayerMask;
+
         [Header("위치 설정")]
         [Tooltip("전방 오프셋 (바라보는 방향으로 이동)")]
         [SerializeField] protected float _forwardOffset = 0f;
@@ -28,15 +33,29 @@ namespace Enemy
         public float RotationOffset => _rotationOffset;
         public Color GizmoColor => _gizmoColor;
         
-        public abstract Collider2D[] GetTargetsInRange(
+        public abstract int GetTargetsInRange(
             Transform origin,
             Vector2 facingDirection,
-            LayerMask targetLayer
+            LayerMask targetLayer,
+            List<Collider2D> results
         );
-        
+
         public abstract void DrawGizmo(Transform origin, Vector2 facingDirection);
-        
+
         public abstract float GetApproximateRadius();
+
+        protected ContactFilter2D GetContactFilter(LayerMask targetLayer)
+        {
+            if (!_contactFilterInitialized || _cachedLayerMask != targetLayer)
+            {
+                _contactFilter = new ContactFilter2D();
+                _contactFilter.SetLayerMask(targetLayer);
+                _contactFilter.useTriggers = true;
+                _cachedLayerMask = targetLayer;
+                _contactFilterInitialized = true;
+            }
+            return _contactFilter;
+        }
         
         protected Vector2 GetOffsetPosition(Vector2 facingDirection)
         {
@@ -45,9 +64,8 @@ namespace Enemy
                 return new Vector2(_forwardOffset, _verticalOffset);
             }
             
-            Vector2 forward = facingDirection.normalized * _forwardOffset;
-            
-            Vector2 perpendicular = new Vector2(-facingDirection.y, facingDirection.x).normalized * _verticalOffset;
+            Vector2 forward = facingDirection * _forwardOffset;
+            Vector2 perpendicular = new Vector2(-facingDirection.y, facingDirection.x) * _verticalOffset;
 
             return forward + perpendicular;
         }

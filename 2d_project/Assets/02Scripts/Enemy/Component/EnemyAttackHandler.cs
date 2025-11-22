@@ -18,11 +18,13 @@ namespace Enemy
         private BaseEnemyAttackPattern _currentAttack;
         private Transform _currentTarget;
         private EnemyEntity _entity;
+        private SpriteRenderer _spriteRenderer;
         private float _timeScale = 1f;
 
         private void Awake()
         {
             _entity = GetComponent<EnemyEntity>();
+            _spriteRenderer = GetComponent<SpriteRenderer>();
 
             if (_animator == null)
             {
@@ -94,10 +96,9 @@ namespace Enemy
 
         private Vector2 GetFacingDirection()
         {
-            var spriteRenderer = GetComponent<SpriteRenderer>();
-            if (spriteRenderer != null)
+            if (_spriteRenderer != null)
             {
-                return spriteRenderer.flipX ? Vector2.left : Vector2.right;
+                return _spriteRenderer.flipX ? Vector2.left : Vector2.right;
             }
             return Vector2.right;
         }

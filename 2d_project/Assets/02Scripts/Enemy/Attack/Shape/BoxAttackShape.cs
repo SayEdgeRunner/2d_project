@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Enemy
@@ -12,16 +13,32 @@ namespace Enemy
         [Tooltip("좌우 너비")]
         [SerializeField] private float _width = 2f;
 
+        private Vector2 _cachedSize;
+        private bool _sizeInitialized;
+
         public float Length => _length;
         public float Width => _width;
-        public Vector2 Size => new Vector2(_length, _width);
 
-        public override Collider2D[] GetTargetsInRange(Transform origin, Vector2 facingDirection, LayerMask targetLayer)
+        public Vector2 Size
+        {
+            get
+            {
+                if (!_sizeInitialized)
+                {
+                    _cachedSize = new Vector2(_length, _width);
+                    _sizeInitialized = true;
+                }
+                return _cachedSize;
+            }
+        }
+
+        public override int GetTargetsInRange(Transform origin, Vector2 facingDirection, LayerMask targetLayer, List<Collider2D> results)
         {
             Vector2 center = (Vector2)origin.position + GetOffsetPosition(facingDirection);
             float angle = GetFinalRotation(facingDirection);
-            
-            return Physics2D.OverlapBoxAll(center, new Vector2(_length, _width), angle, targetLayer);
+            var filter = GetContactFilter(targetLayer);
+
+            return Physics2D.OverlapBox(center, Size, angle, filter, results);
         }
 
         public override void DrawGizmo(Transform origin, Vector2 facingDirection)

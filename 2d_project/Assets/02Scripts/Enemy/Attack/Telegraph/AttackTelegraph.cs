@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Core;
 using UnityEngine;
 
@@ -18,29 +19,85 @@ namespace Enemy
         [SerializeField] private Color _defaultFillColor = new Color(1f, 0f, 0f, 0.3f);
         [SerializeField] private Color _defaultOutlineColor = new Color(1f, 0f, 0f, 1f);
         [SerializeField] private float _outlineWidth = 0.02f;
+        
+        private static readonly int PropColor = Shader.PropertyToID("_Color");
+        private static readonly int PropOutlineColor = Shader.PropertyToID("_OutlineColor");
+        private static readonly int PropOutlineWidth = Shader.PropertyToID("_OutlineWidth");
+        private static readonly int PropFillAmount = Shader.PropertyToID("_FillAmount");
+        private static readonly int PropRadiusX = Shader.PropertyToID("_RadiusX");
+        private static readonly int PropRadiusY = Shader.PropertyToID("_RadiusY");
+        private static readonly int PropAngle = Shader.PropertyToID("_Angle");
+        private static readonly int PropWidth = Shader.PropertyToID("_Width");
+        private static readonly int PropHeight = Shader.PropertyToID("_Height");
+        private static readonly int PropLength = Shader.PropertyToID("_Length");
+        private static readonly int PropRadius = Shader.PropertyToID("_Radius");
 
         private MeshFilter _meshFilter;
         private MeshRenderer _meshRenderer;
-        private Material _material;
+        private MaterialPropertyBlock _propBlock;
         private Coroutine _fillCoroutine;
-        private Mesh _currentMesh;
         
+        private static Mesh _sharedQuadMesh;
+        private static int _sharedMeshRefCount;
+        
+        private Dictionary<Shader, Material> _materialCache;
+
         private float _timeScale = 1f;
         private bool _isPaused = false;
-        
+
         private AttackShape _currentShape;
         private float _currentDuration;
         private float _elapsed;
         private Action _onComplete;
 
         public bool IsActive => _meshRenderer != null && _meshRenderer.enabled;
-        public float FillAmount => _material != null ? _material.GetFloat("_FillAmount") : 0f;
+
+        public float FillAmount
+        {
+            get
+            {
+                if (_propBlock == null || _meshRenderer == null) return 0f;
+                _meshRenderer.GetPropertyBlock(_propBlock);
+                return _propBlock.GetFloat(PropFillAmount);
+            }
+        }
 
         private void Awake()
         {
             _meshFilter = GetComponent<MeshFilter>();
             _meshRenderer = GetComponent<MeshRenderer>();
             _meshRenderer.enabled = false;
+
+            _propBlock = new MaterialPropertyBlock();
+            _materialCache = new Dictionary<Shader, Material>();
+            
+            InitializeSharedMesh();
+            _meshFilter.sharedMesh = _sharedQuadMesh;
+            
+            PrewarmMaterials();
+        }
+
+        private static void InitializeSharedMesh()
+        {
+            if (_sharedQuadMesh == null)
+            {
+                _sharedQuadMesh = TelegraphMeshGenerator.CreateQuad(1f, 1f);
+                _sharedQuadMesh.name = "Telegraph_SharedQuad";
+            }
+            _sharedMeshRefCount++;
+        }
+
+        private void PrewarmMaterials()
+        {
+            Shader[] shaders = { _circleShader, _sectorShader, _boxShader, _capsuleShader };
+
+            foreach (var shader in shaders)
+            {
+                if (shader != null)
+                {
+                    _materialCache[shader] = new Material(shader);
+                }
+            }
         }
 
         private void OnEnable()
@@ -54,6 +111,8 @@ namespace Enemy
             Hide();
         }
 
+        #region ITimeScalable
+
         public void SetTimeScale(float scale)
         {
             _timeScale = scale;
@@ -62,6 +121,8 @@ namespace Enemy
 
         public void Pause() => SetTimeScale(0f);
         public void Resume() => SetTimeScale(1f);
+
+        #endregion
         
         public void Show(AttackShape shape, float duration, Color? fillColor,
                          Vector2 facingDirection, Action onComplete = null)
@@ -71,7 +132,7 @@ namespace Enemy
                 Debug.LogWarning("[AttackTelegraph] Shape is null!");
                 return;
             }
-            
+
             Hide();
 
             _currentShape = shape;
@@ -80,7 +141,6 @@ namespace Enemy
             _onComplete = onComplete;
 
             SetupMeshAndMaterial(shape, facingDirection, fillColor ?? _defaultFillColor);
-
             UpdateTransform(shape, facingDirection);
 
             _meshRenderer.enabled = true;
@@ -109,28 +169,14 @@ namespace Enemy
                 _meshRenderer.enabled = false;
             }
 
-            if (_material != null)
-            {
-                Destroy(_material);
-                _material = null;
-            }
-
-            if (_currentMesh != null)
-            {
-                Destroy(_currentMesh);
-                _currentMesh = null;
-            }
-
             _currentShape = null;
             _onComplete = null;
         }
 
         public void SetFillAmount(float amount)
         {
-            if (_material != null)
-            {
-                _material.SetFloat("_FillAmount", Mathf.Clamp01(amount));
-            }
+            _propBlock.SetFloat(PropFillAmount, Mathf.Clamp01(amount));
+            _meshRenderer.SetPropertyBlock(_propBlock);
         }
 
         private void SetupMeshAndMaterial(AttackShape shape, Vector2 facingDirection, Color fillColor)
@@ -141,19 +187,31 @@ namespace Enemy
                 Debug.LogError($"[AttackTelegraph] No shader found for shape type: {shape.GetType().Name}");
                 return;
             }
-
-            _material = new Material(shader);
-            _material.SetColor("_Color", fillColor);
-            _material.SetColor("_OutlineColor", _defaultOutlineColor);
-            _material.SetFloat("_OutlineWidth", _outlineWidth);
-            _material.SetFloat("_FillAmount", 0f);
             
+            Material material = GetOrCreateMaterial(shader);
+            _meshRenderer.sharedMaterial = material;
+            
+            _propBlock.Clear();
+            _propBlock.SetColor(PropColor, fillColor);
+            _propBlock.SetColor(PropOutlineColor, _defaultOutlineColor);
+            _propBlock.SetFloat(PropOutlineWidth, _outlineWidth);
+            _propBlock.SetFloat(PropFillAmount, 0f);
+
             ConfigureShaderParameters(shape);
+            _meshRenderer.SetPropertyBlock(_propBlock);
             
             Vector2 meshSize = GetMeshSizeForShape(shape);
-            _currentMesh = TelegraphMeshGenerator.CreateQuad(meshSize.x, meshSize.y);
-            _meshFilter.mesh = _currentMesh;
-            _meshRenderer.material = _material;
+            transform.localScale = new Vector3(meshSize.x, meshSize.y, 1f);
+        }
+
+        private Material GetOrCreateMaterial(Shader shader)
+        {
+            if (!_materialCache.TryGetValue(shader, out var material))
+            {
+                material = new Material(shader);
+                _materialCache[shader] = material;
+            }
+            return material;
         }
 
         private Shader GetShaderForShape(AttackShape shape)
@@ -185,24 +243,24 @@ namespace Enemy
             switch (shape)
             {
                 case CircleAttackShape circle:
-                    _material.SetFloat("_RadiusX", circle.RadiusX);
-                    _material.SetFloat("_RadiusY", circle.RadiusY);
+                    _propBlock.SetFloat(PropRadiusX, circle.RadiusX);
+                    _propBlock.SetFloat(PropRadiusY, circle.RadiusY);
                     break;
 
                 case SectorAttackShape sector:
-                    _material.SetFloat("_RadiusX", sector.RadiusX);
-                    _material.SetFloat("_RadiusY", sector.RadiusY);
-                    _material.SetFloat("_Angle", sector.Angle);
+                    _propBlock.SetFloat(PropRadiusX, sector.RadiusX);
+                    _propBlock.SetFloat(PropRadiusY, sector.RadiusY);
+                    _propBlock.SetFloat(PropAngle, sector.Angle);
                     break;
 
                 case BoxAttackShape box:
-                    _material.SetFloat("_Width", box.Length);
-                    _material.SetFloat("_Height", box.Width);
+                    _propBlock.SetFloat(PropWidth, box.Length);
+                    _propBlock.SetFloat(PropHeight, box.Width);
                     break;
 
                 case CapsuleAttackShape capsule:
-                    _material.SetFloat("_Length", capsule.Length);
-                    _material.SetFloat("_Radius", capsule.Radius);
+                    _propBlock.SetFloat(PropLength, capsule.Length);
+                    _propBlock.SetFloat(PropRadius, capsule.Radius);
                     break;
             }
         }
@@ -211,7 +269,7 @@ namespace Enemy
         {
             Vector2 offset = GetShapeOffset(shape, facingDirection);
             transform.localPosition = new Vector3(offset.x, offset.y, 0);
-            
+
             float rotation = GetShapeRotation(shape, facingDirection);
             transform.localRotation = Quaternion.Euler(0, 0, rotation);
         }
@@ -262,6 +320,22 @@ namespace Enemy
         private void OnDestroy()
         {
             Hide();
+            
+            foreach (var material in _materialCache.Values)
+            {
+                if (material != null)
+                {
+                    Destroy(material);
+                }
+            }
+            _materialCache.Clear();
+            
+            _sharedMeshRefCount--;
+            if (_sharedMeshRefCount <= 0 && _sharedQuadMesh != null)
+            {
+                Destroy(_sharedQuadMesh);
+                _sharedQuadMesh = null;
+            }
         }
     }
 }

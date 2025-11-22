@@ -1,12 +1,17 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using Core;
 using UnityEngine;
+using UnityEngine.Pool;
+using Debug = UnityEngine.Debug;
 
 namespace Enemy
 {
     [CreateAssetMenu(fileName = "MeleeAttack", menuName = "Game/Attacks/Melee")]
     public class MeleeAttackPattern : BaseEnemyAttackPattern
     {
+        private readonly List<Collider2D> _hitResults = new List<Collider2D>(16);
+
         [Header("근접 공격 설정")]
         [SerializeField] private float _damage = 10f;
 
@@ -35,21 +40,21 @@ namespace Enemy
         {
             if (attacker == null)
             {
-                Debug.LogWarning($"[{_attackName}] Attacker is null!");
+                LogWarning("Attacker is null!");
                 return;
             }
 
-            var animator = attacker.GetComponent<Animator>();
+            var animator = attacker.Animator;
             if (animator == null)
             {
-                Debug.LogError($"[{_attackName}] Attacker has no Animator component!");
+                LogError("Attacker has no Animator component!");
                 return;
             }
 
-            var attackHandler = attacker.GetComponent<EnemyAttackHandler>();
+            var attackHandler = attacker.AttackHandler;
             if (attackHandler == null)
             {
-                Debug.LogError($"[{_attackName}] Attacker has no EnemyAttackHandler component!");
+                LogError("Attacker has no EnemyAttackHandler component!");
                 return;
             }
 
@@ -61,7 +66,7 @@ namespace Enemy
             }
             else
             {
-                Debug.LogWarning($"[{_attackName}] No animation trigger set, attack will not play!");
+                LogWarning("No animation trigger set, attack will not play!");
             }
         }
 
@@ -69,28 +74,44 @@ namespace Enemy
         {
             if (_attackShape == null)
             {
-                Debug.LogError($"[{_attackName}] AttackShape is not assigned!");
+                LogError("AttackShape is not assigned!");
                 return;
             }
 
             Transform origin = attackPoint ? attackPoint : attacker.transform;
             Vector2 facingDirection = GetFacingDirection(attacker);
-            
-            Collider2D[] hits = _attackShape.GetTargetsInRange(origin, facingDirection, targetLayer);
 
-            HashSet<GameObject> hitObjects = new HashSet<GameObject>();
+            _hitResults.Clear();
+            int hitCount = _attackShape.GetTargetsInRange(origin, facingDirection, targetLayer, _hitResults);
 
-            foreach (var hit in hits)
+            if (hitCount == 0) return;
+
+            using (HashSetPool<GameObject>.Get(out var hitObjects))
             {
-                if (hit.gameObject == attacker.gameObject) continue;
-                if (hitObjects.Contains(hit.gameObject)) continue;
+                for (int i = 0; i < hitCount; i++)
+                {
+                    var hit = _hitResults[i];
+                    if (hit.gameObject == attacker.gameObject) continue;
+                    if (hitObjects.Contains(hit.gameObject)) continue;
 
-                var damageable = hit.GetComponent<IDamageable>();
-                if (damageable == null) continue;
+                    if (!hit.TryGetComponent<IDamageable>(out var damageable)) continue;
 
-                damageable.TakeDamage(_damage);
-                hitObjects.Add(hit.gameObject);
+                    damageable.TakeDamage(_damage);
+                    hitObjects.Add(hit.gameObject);
+                }
             }
+        }
+
+        [Conditional("UNITY_EDITOR")]
+        private void LogWarning(string message)
+        {
+            Debug.LogWarning($"[{InternalAttackName}] {message}");
+        }
+
+        [Conditional("UNITY_EDITOR")]
+        private void LogError(string message)
+        {
+            Debug.LogError($"[{InternalAttackName}] {message}");
         }
     }
 }

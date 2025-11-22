@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
 
 namespace Enemy
 {
@@ -12,35 +13,39 @@ namespace Enemy
 
         [Tooltip("좌우 반지름 (수직 방향)")]
         [SerializeField] private float _radiusY = 2f;
+        
+        private readonly List<Collider2D> _tempResults = new List<Collider2D>(16);
 
         public float RadiusX => _radiusX;
         public float RadiusY => _radiusY;
         public bool IsCircle => Mathf.Approximately(_radiusX, _radiusY);
 
-        public override Collider2D[] GetTargetsInRange(Transform origin, Vector2 facingDirection, LayerMask targetLayer)
+        public override int GetTargetsInRange(Transform origin, Vector2 facingDirection, LayerMask targetLayer, List<Collider2D> results)
         {
             Vector2 center = (Vector2)origin.position + GetOffsetPosition(facingDirection);
-            float rotation = GetFinalRotation(facingDirection);
+            var filter = GetContactFilter(targetLayer);
 
             if (IsCircle)
             {
-                return Physics2D.OverlapCircleAll(center, _radiusX, targetLayer);
+                return Physics2D.OverlapCircle(center, _radiusX, filter, results);
             }
-
+            
+            float rotation = GetFinalRotation(facingDirection);
             float maxRadius = Mathf.Max(_radiusX, _radiusY);
-            Collider2D[] allInRadius = Physics2D.OverlapCircleAll(center, maxRadius, targetLayer);
 
-            List<Collider2D> inEllipse = new List<Collider2D>();
+            _tempResults.Clear();
+            int count = Physics2D.OverlapCircle(center, maxRadius, filter, _tempResults);
 
-            foreach (var col in allInRadius)
+            for (int i = 0; i < count; i++)
             {
+                var col = _tempResults[i];
                 if (IsPointInEllipse(col.transform.position, center, rotation))
                 {
-                    inEllipse.Add(col);
+                    results.Add(col);
                 }
             }
 
-            return inEllipse.ToArray();
+            return results.Count;
         }
 
         public override void DrawGizmo(Transform origin, Vector2 facingDirection)

@@ -23,12 +23,19 @@ namespace Enemy
         private EnemyDeathPresenter _deathPresenter;
         private EnemyMoveAIComponent _moveAIComponent;
         private EnemyMoveComponent _moveComponent;
+        private EnemyAttackHandler _attackHandler;
+        private SpriteRenderer _spriteRenderer;
+        private Animator _animator;
         private Collider2D[] _colliders;
         private Coroutine _deathCoroutine;
+        private WaitForSeconds _deathDelayWait;
 
         public bool IsDead => _lifeState == EnemyLifeState.Dead;
         public EnemyLifeState LifeState => _lifeState;
         public EnemyStatComponent StatComponent => _statComponent;
+        public EnemyAttackHandler AttackHandler => _attackHandler;
+        public SpriteRenderer SpriteRenderer => _spriteRenderer;
+        public Animator Animator => _animator;
 
         private void Awake()
         {
@@ -37,7 +44,11 @@ namespace Enemy
             _deathPresenter = GetComponent<EnemyDeathPresenter>();
             _moveAIComponent = GetComponent<EnemyMoveAIComponent>();
             _moveComponent = GetComponent<EnemyMoveComponent>();
+            _attackHandler = GetComponent<EnemyAttackHandler>();
+            _spriteRenderer = GetComponent<SpriteRenderer>();
+            _animator = GetComponent<Animator>();
             _colliders = GetComponents<Collider2D>();
+            _deathDelayWait = new WaitForSeconds(_deathDelay);
         }
 
         private void OnEnable()
@@ -125,7 +136,7 @@ namespace Enemy
 
         private IEnumerator TransitionToDeadState()
         {
-            yield return new WaitForSeconds(_deathDelay);
+            yield return _deathDelayWait;
 
             _lifeState = EnemyLifeState.Dead;
             OnDeathComplete?.Invoke(this);
@@ -261,9 +272,10 @@ namespace Enemy
             }
 
             var attacks = _statComponent.GetAllAttacks();
-            Debug.Log($"[EnemyEntity] Total attacks: {attacks.Length}");
+            Debug.Log($"[EnemyEntity] Total attacks: {attacks?.Count ?? 0}");
 
-            for (int i = 0; i < attacks.Length; i++)
+            if (attacks == null) return;
+            for (int i = 0; i < attacks.Count; i++)
             {
                 if (attacks[i] != null)
                 {

@@ -16,33 +16,37 @@ namespace Enemy
         [Header("부채꼴 각도")]
         [Range(1f, 360f)]
         [SerializeField] private float _angle = 90f;
+        
+        private readonly List<Collider2D> _tempResults = new List<Collider2D>(16);
 
         public float RadiusX => _radiusX;
         public float RadiusY => _radiusY;
         public float Angle => _angle;
         public bool IsCircular => Mathf.Approximately(_radiusX, _radiusY);
 
-        public override Collider2D[] GetTargetsInRange(Transform origin, Vector2 facingDirection, LayerMask targetLayer)
+        public override int GetTargetsInRange(Transform origin, Vector2 facingDirection, LayerMask targetLayer, List<Collider2D> results)
         {
             Vector2 center = (Vector2)origin.position + GetOffsetPosition(facingDirection);
             float rotation = GetFinalRotation(facingDirection);
+            var filter = GetContactFilter(targetLayer);
 
             float maxRadius = Mathf.Max(_radiusX, _radiusY);
-            Collider2D[] allInRadius = Physics2D.OverlapCircleAll(center, maxRadius, targetLayer);
 
-            List<Collider2D> inSector = new List<Collider2D>();
+            _tempResults.Clear();
+            int count = Physics2D.OverlapCircle(center, maxRadius, filter, _tempResults);
 
-            foreach (var col in allInRadius)
+            for (int i = 0; i < count; i++)
             {
+                var col = _tempResults[i];
                 Vector2 targetPos = col.transform.position;
 
                 if (IsPointInSector(targetPos, center, rotation))
                 {
-                    inSector.Add(col);
+                    results.Add(col);
                 }
             }
 
-            return inSector.ToArray();
+            return results.Count;
         }
 
         public override void DrawGizmo(Transform origin, Vector2 facingDirection)

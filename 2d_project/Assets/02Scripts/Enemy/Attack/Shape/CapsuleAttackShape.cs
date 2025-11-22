@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Enemy
@@ -12,16 +13,32 @@ namespace Enemy
         [Tooltip("캡슐 전체 길이 (전방 방향)")]
         [SerializeField] private float _length = 3f;
 
+        private Vector2 _cachedSize;
+        private bool _sizeInitialized;
+
         public float Radius => _radius;
         public float Length => _length;
 
-        public override Collider2D[] GetTargetsInRange(Transform origin, Vector2 facingDirection, LayerMask targetLayer)
+        private Vector2 CapsuleSize
+        {
+            get
+            {
+                if (!_sizeInitialized)
+                {
+                    _cachedSize = new Vector2(_length, _radius * 2f);
+                    _sizeInitialized = true;
+                }
+                return _cachedSize;
+            }
+        }
+
+        public override int GetTargetsInRange(Transform origin, Vector2 facingDirection, LayerMask targetLayer, List<Collider2D> results)
         {
             Vector2 center = (Vector2)origin.position + GetOffsetPosition(facingDirection);
-            Vector2 size = new Vector2(_length, _radius * 2f);
             float angle = GetFinalRotation(facingDirection);
+            var filter = GetContactFilter(targetLayer);
 
-            return Physics2D.OverlapCapsuleAll(center, size, CapsuleDirection2D.Horizontal, angle, targetLayer);
+            return Physics2D.OverlapCapsule(center, CapsuleSize, CapsuleDirection2D.Horizontal, angle, filter, results);
         }
 
         public override void DrawGizmo(Transform origin, Vector2 facingDirection)
