@@ -14,6 +14,7 @@ namespace Enemy
 
         [Header("Debug")]
         [SerializeField] private float _deathDelay = 2f;
+        [SerializeField] private Transform _targetTransform;
 
         private EnemyLifeState _lifeState = EnemyLifeState.Alive;
         
@@ -23,7 +24,6 @@ namespace Enemy
         private EnemyMoveAIComponent _moveAIComponent;
         private EnemyMoveComponent _moveComponent;
         private Collider2D[] _colliders;
-        private Transform _targetTransform;
         private Coroutine _deathCoroutine;
 
         public bool IsDead => _lifeState == EnemyLifeState.Dead;
@@ -267,7 +267,7 @@ namespace Enemy
             {
                 if (attacks[i] != null)
                 {
-                    Debug.Log($"  [{i}] {attacks[i].GetType().Name} - Radius: {attacks[i].AttackRadius}");
+                    Debug.Log($"  [{i}] {attacks[i].GetType().Name} - Radius: {attacks[i].AttackRange}");
                 }
             }
         }

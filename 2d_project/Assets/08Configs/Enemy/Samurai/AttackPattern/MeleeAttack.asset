@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: MeleeAttack
   m_EditorClassIdentifier: 
   _attackName: 
-  _attackRadius: 1
+  _attackShape: {fileID: 11400000, guid: c4f7f819ca54c43e3a688dc90bf31122, type: 2}
   _damage: 10
   _attackAnimationTrigger: Attack

@@ -9,7 +9,10 @@ namespace Enemy
         private float _baseMoveSpeed;
         private int _experience;
         private int _score;
-        private List<BaseEnemyAttackPattern> _attacks;
+        
+        
+        [Header("Debug")]
+        [SerializeField] private List<BaseEnemyAttackPattern> _attacks;
 
         [Header("현재 스탯")]
         [SerializeField] private float _maxHealth;

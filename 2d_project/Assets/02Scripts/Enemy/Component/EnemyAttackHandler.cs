@@ -44,16 +44,25 @@ namespace Enemy
         private void OnDrawGizmosSelected()
         {
             Transform origin = _attackPoint != null ? _attackPoint : transform;
+            Vector2 facingDirection = GetFacingDirection();
 
-            // 현재 준비된 공격의 범위 표시 (빨간색)
+            // 현재 준비된 공격의 범위 표시
             if (_currentAttack != null)
             {
-                Gizmos.color = Color.red;
-                Gizmos.DrawWireSphere(origin.position, _currentAttack.AttackRadius);
+                // MeleeAttackPattern인 경우 Shape 사용
+                if (_currentAttack is MeleeAttackPattern meleeAttack && meleeAttack.AttackShape != null)
+                {
+                    meleeAttack.AttackShape.DrawGizmo(origin, facingDirection);
+                }
+                else
+                {
+                    // Shape가 없거나 다른 패턴일 경우 기본 원형 표시
+                    Gizmos.color = Color.red;
+                    Gizmos.DrawWireSphere(origin.position, _currentAttack.AttackRange);
 
-                // 공격 범위 채우기 (반투명)
-                Gizmos.color = new Color(1f, 0f, 0f, 0.1f);
-                Gizmos.DrawSphere(origin.position, _currentAttack.AttackRadius);
+                    Gizmos.color = new Color(1f, 0f, 0f, 0.1f);
+                    Gizmos.DrawSphere(origin.position, _currentAttack.AttackRange);
+                }
             }
             else
             {
@@ -66,12 +75,29 @@ namespace Enemy
         private void OnDrawGizmos()
         {
             OnDrawGizmosSelected();
+
             // 항상 공격 포인트 위치 표시
             if (_attackPoint != null)
             {
                 Gizmos.color = Color.cyan;
                 Gizmos.DrawWireSphere(_attackPoint.position, 0.2f);
             }
+
+            // 바라보는 방향 표시
+            Vector2 facingDirection = GetFacingDirection();
+            Gizmos.color = Color.green;
+            Vector3 start = _attackPoint != null ? _attackPoint.position : transform.position;
+            Gizmos.DrawLine(start, start + (Vector3)(facingDirection * 0.5f));
+        }
+
+        private Vector2 GetFacingDirection()
+        {
+            var spriteRenderer = GetComponent<SpriteRenderer>();
+            if (spriteRenderer != null)
+            {
+                return spriteRenderer.flipX ? Vector2.left : Vector2.right;
+            }
+            return Vector2.right;
         }
 #endif
     }

@@ -15,12 +15,17 @@ namespace Enemy
         [Header("근접 공격 설정")]
         [SerializeField] private float _damage = 10f;
 
+        [Header("판정 형태")]
+        [Tooltip("공격 판정 영역 (Circle, Sector, Box, Capsule 등)")]
+        [SerializeField] private AttackShape _attackShape;
+
         [Header("애니메이션")]
         [Tooltip("재생할 공격 애니메이션 트리거 이름")]
         [SerializeField] private string _attackAnimationTrigger = "Attack";
 
         public float Damage => _damage;
         public string AttackAnimationTrigger => _attackAnimationTrigger;
+        public AttackShape AttackShape => _attackShape;
 
         public override void Execute(EnemyEntity attacker, Transform target)
         {
@@ -58,13 +63,16 @@ namespace Enemy
 
         public override void OnHit(EnemyEntity attacker, Transform target, Transform attackPoint, LayerMask targetLayer)
         {
-            Transform attackOrigin = attackPoint ? attackPoint : attacker.transform;
+            if (_attackShape == null)
+            {
+                Debug.LogError($"[{_attackName}] AttackShape is not assigned!");
+                return;
+            }
 
-            Collider2D[] hits = Physics2D.OverlapCircleAll(
-                attackOrigin.position,
-                _attackRadius,
-                targetLayer
-            );
+            Transform origin = attackPoint ? attackPoint : attacker.transform;
+            Vector2 facingDirection = GetFacingDirection(attacker);
+            
+            Collider2D[] hits = _attackShape.GetTargetsInRange(origin, facingDirection, targetLayer);
 
             HashSet<GameObject> hitObjects = new HashSet<GameObject>();
 
@@ -75,7 +83,7 @@ namespace Enemy
 
                 var damageable = hit.GetComponent<IDamageable>();
                 if (damageable == null) continue;
-                
+
                 damageable.TakeDamage(_damage);
                 hitObjects.Add(hit.gameObject);
             }
