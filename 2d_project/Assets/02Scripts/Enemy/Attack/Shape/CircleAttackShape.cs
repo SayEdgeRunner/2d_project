@@ -68,11 +68,6 @@ namespace Enemy
             return Mathf.Max(_radiusX, _radiusY) + offsetMagnitude;
         }
 
-        #region 공통 함수 (판정 & Gizmo 공용)
-
-        /// <summary>
-        /// 점이 타원 내부에 있는지 판정
-        /// </summary>
         private bool IsPointInEllipse(Vector2 point, Vector2 center, float rotationDegrees)
         {
             Vector2 diff = point - center;
@@ -87,10 +82,6 @@ namespace Enemy
                    (localY * localY) / (_radiusY * _radiusY) <= 1f;
         }
 
-        /// <summary>
-        /// 타원 경계 위의 점 계산 (로컬 각도 기준)
-        /// Gizmo와 판정 모두 이 함수 사용
-        /// </summary>
         private Vector2 GetPointOnEllipseBoundary(Vector2 center, float localAngleDegrees, float rotationDegrees)
         {
             float rad = localAngleDegrees * Mathf.Deg2Rad;
@@ -107,10 +98,6 @@ namespace Enemy
             return center + new Vector2(rotatedX, rotatedY);
         }
 
-        #endregion
-
-        #region Gizmo 그리기
-
         private void DrawWireEllipse(Vector2 center, float rotationDegrees, int segments = 32)
         {
             float angleStep = 360f / segments;
@@ -125,7 +112,5 @@ namespace Enemy
                 prevPoint = newPoint;
             }
         }
-
-        #endregion
     }
 }

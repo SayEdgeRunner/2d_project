@@ -52,19 +52,15 @@ namespace Enemy
             float halfAngle = _angle / 2f;
 
             Gizmos.color = _gizmoColor;
-
-            // 공통 함수로 시작/끝 점 계산
+            
             Vector2 startPoint = GetPointOnEllipseBoundary(center, -halfAngle, rotation);
             Vector2 endPoint = GetPointOnEllipseBoundary(center, halfAngle, rotation);
-
-            // 시작선과 끝선
+            
             Gizmos.DrawLine(center, startPoint);
             Gizmos.DrawLine(center, endPoint);
-
-            // 호 그리기
+            
             DrawEllipseArc(center, rotation, _angle);
-
-            // 반투명 채우기
+            
             Gizmos.color = new Color(_gizmoColor.r, _gizmoColor.g, _gizmoColor.b, 0.1f);
             DrawFilledEllipseSector(center, rotation, _angle);
         }
@@ -75,11 +71,6 @@ namespace Enemy
             return Mathf.Max(_radiusX, _radiusY) + offsetMagnitude;
         }
 
-        #region 공통 함수 (판정 & Gizmo 공용)
-
-        /// <summary>
-        /// 점이 부채꼴 내부에 있는지 판정 (각도 + 타원 거리)
-        /// </summary>
         private bool IsPointInSector(Vector2 point, Vector2 center, float rotationDegrees)
         {
             Vector2 toPoint = point - center;
@@ -91,10 +82,7 @@ namespace Enemy
 
             return IsInsideEllipse(toPoint, rotationDegrees);
         }
-
-        /// <summary>
-        /// 로컬 좌표계에서의 각도 계산 (-180 ~ 180)
-        /// </summary>
+        
         private float GetLocalAngle(Vector2 direction, float rotationDegrees)
         {
             float rad = -rotationDegrees * Mathf.Deg2Rad;
@@ -106,10 +94,7 @@ namespace Enemy
 
             return Mathf.Atan2(localY, localX) * Mathf.Rad2Deg;
         }
-
-        /// <summary>
-        /// 점이 타원 내부에 있는지 판정
-        /// </summary>
+        
         private bool IsInsideEllipse(Vector2 localDirection, float rotationDegrees)
         {
             float rad = -rotationDegrees * Mathf.Deg2Rad;
@@ -122,11 +107,7 @@ namespace Enemy
             return (localX * localX) / (_radiusX * _radiusX) +
                    (localY * localY) / (_radiusY * _radiusY) <= 1f;
         }
-
-        /// <summary>
-        /// 타원 경계 위의 점 계산 (로컬 각도 기준)
-        /// Gizmo와 판정 모두 이 함수 사용
-        /// </summary>
+        
         private Vector2 GetPointOnEllipseBoundary(Vector2 center, float localAngleDegrees, float rotationDegrees)
         {
             float rad = localAngleDegrees * Mathf.Deg2Rad;
@@ -142,10 +123,6 @@ namespace Enemy
 
             return center + new Vector2(rotatedX, rotatedY);
         }
-
-        #endregion
-
-        #region Gizmo 그리기
 
         private void DrawEllipseArc(Vector2 center, float rotationDegrees, float arcAngle, int segments = 32)
         {
@@ -180,7 +157,5 @@ namespace Enemy
                 Gizmos.DrawLine(center, p2);
             }
         }
-
-        #endregion
     }
 }

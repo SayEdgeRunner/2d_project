@@ -4,11 +4,6 @@ using UnityEngine;
 
 namespace Enemy
 {
-    /// <summary>
-    /// 근접 공격 패턴
-    /// 데미지 판정은 애니메이션 이벤트에서 OnAttackHit() 호출 시 발생합니다.
-    /// 애니메이션 에디터에서 원하는 프레임에 "OnAttackHit" 이벤트를 추가하세요.
-    /// </summary>
     [CreateAssetMenu(fileName = "MeleeAttack", menuName = "Game/Attacks/Melee")]
     public class MeleeAttackPattern : BaseEnemyAttackPattern
     {
@@ -23,9 +18,18 @@ namespace Enemy
         [Tooltip("재생할 공격 애니메이션 트리거 이름")]
         [SerializeField] private string _attackAnimationTrigger = "Attack";
 
+        [Header("텔레그래프 설정")]
+        [Tooltip("공격 예고 표시 시간 (0이면 표시 안함)")]
+        [SerializeField] private float _telegraphDuration = 0f;
+
+        [Tooltip("텔레그래프 채우기 색상")]
+        [SerializeField] private Color _telegraphColor = new Color(1f, 0f, 0f, 0.3f);
+
         public float Damage => _damage;
         public string AttackAnimationTrigger => _attackAnimationTrigger;
         public AttackShape AttackShape => _attackShape;
+        public float TelegraphDuration => _telegraphDuration;
+        public Color TelegraphColor => _telegraphColor;
 
         public override void Execute(EnemyEntity attacker, Transform target)
         {
