@@ -4,10 +4,8 @@ using UnityEngine;
 
 namespace Core
 {
-    public class PrefabPoolManager : MonoBehaviour
+    public class PrefabPoolManager : Singleton<PrefabPoolManager>
     {
-        private static PrefabPoolManager _instance;
-
         [Header("풀 설정")]
         [SerializeField] private PoolConfiguration[] _poolConfigurations;
 
@@ -17,15 +15,10 @@ namespace Core
         private static readonly Dictionary<GameObject, GameObjectPool> SharedPrefabToPool = new();
         private static readonly Dictionary<GameObject, GameObject> SharedCloneToPrefab = new();
 
-        private void Awake()
+        protected override void Awake()
         {
-            if (_instance != null && _instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-
-            _instance = this;
+            base.Awake();
+            
             DontDestroyOnLoad(gameObject);
 
             if (!_poolContainer)

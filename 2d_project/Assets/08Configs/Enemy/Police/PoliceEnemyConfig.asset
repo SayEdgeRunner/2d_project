@@ -19,8 +19,5 @@ MonoBehaviour:
   _experience: 10
   _score: 10
   _attacks:
-  - AttackName: "\uAE30\uBCF8 \uACF5\uACA9"
-    Type: 0
-    Damage: 10
-    AttackRadius: 1
+  - {fileID: 11400000, guid: 8bac54c1396624ce6a696cb26934f0eb, type: 2}
   _spawnWeight: 10

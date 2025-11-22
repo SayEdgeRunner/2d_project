@@ -7,32 +7,48 @@ using UnityEngine;
 namespace Enemy
 {
     [RequireComponent(typeof(EnemyMoveAIComponent), typeof(EnemyHealthComponent), typeof(EnemyDeathPresenter))]
+    [RequireComponent(typeof(EnemyStatComponent))]
     public class EnemyEntity : MonoBehaviour, IPoolable, IDamageable
     {
         public event Action<EnemyEntity> OnDeathComplete;
 
         [Header("Debug")]
-        [SerializeField] private EnemyLifeState _lifeState = EnemyLifeState.Alive;
         [SerializeField] private float _deathDelay = 2f;
+        [SerializeField] private Transform _targetTransform;
 
+        private EnemyLifeState _lifeState = EnemyLifeState.Alive;
+        
+        private EnemyStatComponent _statComponent;
         private EnemyHealthComponent _healthComponent;
         private EnemyDeathPresenter _deathPresenter;
         private EnemyMoveAIComponent _moveAIComponent;
         private EnemyMoveComponent _moveComponent;
+        private EnemyAttackHandler _attackHandler;
+        private SpriteRenderer _spriteRenderer;
+        private Animator _animator;
         private Collider2D[] _colliders;
-        private Transform _targetTransform;
         private Coroutine _deathCoroutine;
+        private WaitForSeconds _deathDelayWait;
 
         public bool IsDead => _lifeState == EnemyLifeState.Dead;
         public EnemyLifeState LifeState => _lifeState;
+        public EnemyStatComponent StatComponent => _statComponent;
+        public EnemyAttackHandler AttackHandler => _attackHandler;
+        public SpriteRenderer SpriteRenderer => _spriteRenderer;
+        public Animator Animator => _animator;
 
         private void Awake()
         {
+            _statComponent = GetComponent<EnemyStatComponent>();
             _healthComponent = GetComponent<EnemyHealthComponent>();
             _deathPresenter = GetComponent<EnemyDeathPresenter>();
             _moveAIComponent = GetComponent<EnemyMoveAIComponent>();
             _moveComponent = GetComponent<EnemyMoveComponent>();
+            _attackHandler = GetComponent<EnemyAttackHandler>();
+            _spriteRenderer = GetComponent<SpriteRenderer>();
+            _animator = GetComponent<Animator>();
             _colliders = GetComponents<Collider2D>();
+            _deathDelayWait = new WaitForSeconds(_deathDelay);
         }
 
         private void OnEnable()
@@ -60,27 +76,30 @@ namespace Enemy
         public void Initialize(Transform target, EnemyConfig config, float healthMultiplier = 1f, float moveSpeedMultiplier = 1f)
         {
             _targetTransform = target;
+            
+            if (_statComponent)
+            {
+                _statComponent.Initialize(config, healthMultiplier, moveSpeedMultiplier);
+            }
+            
             if (_moveAIComponent && _targetTransform)
             {
                 _moveAIComponent.Initialize(_targetTransform);
             }
             
-            if (_healthComponent)
+            if (_healthComponent && _statComponent)
             {
-                float finalHealth = config.GetFinalHealth(healthMultiplier);
-                _healthComponent.SetMaxHealth(finalHealth);
+                _healthComponent.SetMaxHealth(_statComponent.MaxHealth);
             }
             
-            if (_moveComponent)
+            if (_moveComponent && _statComponent)
             {
-                float finalSpeed = config.GetFinalMoveSpeed(moveSpeedMultiplier);
-                _moveComponent.SetMoveSpeed(finalSpeed);
+                _moveComponent.SetMoveSpeed(_statComponent.MoveSpeed);
             }
         }
 
         public void TakeDamage(float damage)
         {
-            // Dying 또는 Dead 상태에서는 데미지 무시
             if (_lifeState != EnemyLifeState.Alive)
                 return;
 
@@ -92,73 +111,60 @@ namespace Enemy
 
         private void HandleDeath()
         {
-            // 중복 호출 방지
             if (_lifeState != EnemyLifeState.Alive)
                 return;
-
-            // Life State를 Dying으로 변경
+            
             _lifeState = EnemyLifeState.Dying;
-
-            // 1. AI 비활성화
+            
             if (_moveAIComponent)
             {
                 _moveAIComponent.enabled = false;
             }
-
-            // 2. Collider 비활성화 (추가 충돌 방지)
+            
             foreach (var col in _colliders)
             {
                 if (col) col.enabled = false;
             }
-
-            // 3. 사망 연출 재생
+            
             if (_deathPresenter)
             {
                 _deathPresenter.PlayDeathEffect();
             }
-
-            // 4. 지연 후 Dead 상태로 전환
+            
             _deathCoroutine = StartCoroutine(TransitionToDeadState());
         }
 
         private IEnumerator TransitionToDeadState()
         {
-            yield return new WaitForSeconds(_deathDelay);
+            yield return _deathDelayWait;
 
             _lifeState = EnemyLifeState.Dead;
             OnDeathComplete?.Invoke(this);
         }
-
-        // IPoolable 구현
+        
         public void OnCreatedInPool()
         {
-            // 컴포넌트 참조는 Awake에서 처리
         }
 
         public void OnGetFromPool()
         {
-            // Life State 리셋
             _lifeState = EnemyLifeState.Alive;
-
-            // 체력 리셋
+            
             if (_healthComponent)
             {
                 _healthComponent.ResetHealth();
             }
-
-            // AI 활성화
+            
             if (_moveAIComponent)
             {
                 _moveAIComponent.enabled = true;
             }
-
-            // Collider 활성화
+            
             foreach (var col in _colliders)
             {
                 if (col) col.enabled = true;
             }
-
-            // 코루틴 정리
+            
             if (_deathCoroutine != null)
             {
                 StopCoroutine(_deathCoroutine);
@@ -168,10 +174,8 @@ namespace Enemy
 
         public void OnReturnToPool()
         {
-            // 정리 작업
         }
-
-        // ===== 테스트용 메서드 =====
+        
         #if UNITY_EDITOR
         [ContextMenu("Test: Take 10 Damage")]
         private void TestDamage10()
@@ -202,6 +206,82 @@ namespace Enemy
         {
             _healthComponent?.ResetHealth();
             _lifeState = EnemyLifeState.Alive;
+        }
+
+        [ContextMenu("Test: Execute First Attack")]
+        private void TestExecuteFirstAttack()
+        {
+            if (_statComponent == null)
+            {
+                Debug.LogError("[EnemyEntity] StatComponent is null!");
+                return;
+            }
+
+            var attack = _statComponent.GetAttackByIndex(0);
+            if (attack == null)
+            {
+                Debug.LogError("[EnemyEntity] No attacks configured!");
+                return;
+            }
+
+            if (_targetTransform == null)
+            {
+                Debug.LogWarning("[EnemyEntity] No target set, using self as target for test");
+                attack.Execute(this, transform);
+            }
+            else
+            {
+                attack.Execute(this, _targetTransform);
+            }
+        }
+
+        [ContextMenu("Test: Execute Random Attack")]
+        private void TestExecuteRandomAttack()
+        {
+            if (_statComponent == null)
+            {
+                Debug.LogError("[EnemyEntity] StatComponent is null!");
+                return;
+            }
+
+            var attack = _statComponent.GetRandomAttack();
+            if (attack == null)
+            {
+                Debug.LogError("[EnemyEntity] No attacks configured!");
+                return;
+            }
+
+            if (_targetTransform == null)
+            {
+                Debug.LogWarning("[EnemyEntity] No target set, using self as target for test");
+                attack.Execute(this, transform);
+            }
+            else
+            {
+                attack.Execute(this, _targetTransform);
+            }
+        }
+
+        [ContextMenu("Test: List All Attacks")]
+        private void TestListAllAttacks()
+        {
+            if (_statComponent == null)
+            {
+                Debug.LogError("[EnemyEntity] StatComponent is null!");
+                return;
+            }
+
+            var attacks = _statComponent.GetAllAttacks();
+            Debug.Log($"[EnemyEntity] Total attacks: {attacks?.Count ?? 0}");
+
+            if (attacks == null) return;
+            for (int i = 0; i < attacks.Count; i++)
+            {
+                if (attacks[i] != null)
+                {
+                    Debug.Log($"  [{i}] {attacks[i].GetType().Name} - Radius: {attacks[i].AttackRange}");
+                }
+            }
         }
         #endif
     }

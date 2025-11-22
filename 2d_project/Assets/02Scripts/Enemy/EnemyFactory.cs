@@ -4,35 +4,16 @@ using UnityEngine;
 
 namespace Enemy
 {
-    public class EnemyFactory : MonoBehaviour
+    public class EnemyFactory : Singleton<EnemyFactory>
     {
-        private static EnemyFactory _instance;
-        public static EnemyFactory Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    Debug.LogError("[EnemyFactory] Instance is null! Make sure EnemyFactory exists in the scene.");
-                }
-                return _instance;
-            }
-        }
-
         [Header("적 설정")]
         [SerializeField] private EnemyConfig[] _enemyConfigs;
 
         private Dictionary<EEnemyType, EnemyConfig> _configMap;
 
-        private void Awake()
+        protected override void Awake()
         {
-            if (_instance != null && _instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-
-            _instance = this;
+            base.Awake();
             InitializeConfigs();
         }
 
@@ -114,14 +95,6 @@ namespace Enemy
         public IReadOnlyDictionary<EEnemyType, EnemyConfig> GetAllConfigs()
         {
             return _configMap;
-        }
-
-        private void OnDestroy()
-        {
-            if (_instance == this)
-            {
-                _instance = null;
-            }
         }
 
         #if UNITY_EDITOR
