@@ -19,9 +19,8 @@ namespace Enemy
         [SerializeField] private int _score = 10;
 
         [Header("공격 설정")]
-        [Tooltip("이 적이 사용할 공격들 (근접, 원거리 등)")]
-        [SerializeField] private AttackData[] _attacks = new AttackData[1];
-        private Dictionary<EAttackType, AttackData> _attackMap;
+        [Tooltip("이 적이 사용할 공격들")]
+        [SerializeField] private BaseEnemyAttackPattern[] _attacks;
 
         [Header("스폰 설정")]
         [Tooltip("스폰 가중치 - 높을수록 자주 등장")]
@@ -35,22 +34,8 @@ namespace Enemy
         public int Score => _score;
         public int SpawnWeight => _spawnWeight;
 
-        public AttackData[] Attacks => _attacks;
+        public BaseEnemyAttackPattern[] Attacks => _attacks;
         public int AttackCount => _attacks?.Length ?? 0;
-
-        private void OnEnable() 
-        {
-            _attackMap = new Dictionary<EAttackType, AttackData>();
-            if (_attacks == null) return;
-    
-            foreach (var attack in _attacks) 
-            {
-                if (!_attackMap.TryAdd(attack.Type, attack)) 
-                {
-                    Debug.LogWarning($"Duplicate attack type {attack.Type} in {name}");
-                }
-            }
-        }
 
         public float GetFinalHealth(float difficultyMultiplier = 1f)
         {
@@ -61,28 +46,21 @@ namespace Enemy
         {
             return _moveSpeed * difficultyMultiplier;
         }
-        
-        public AttackData? GetAttack(EAttackType type)
-        {
-            return _attackMap.TryGetValue(type, out var attack) ? attack : null;
-        }
-        
-        public AttackData? GetAttackByIndex(int index)
+
+        public BaseEnemyAttackPattern GetAttackByIndex(int index)
         {
             if (_attacks == null || index < 0 || index >= _attacks.Length)
                 return null;
 
             return _attacks[index];
         }
-        
-        public bool HasMeleeAttack()
+
+        public BaseEnemyAttackPattern GetRandomAttack()
         {
-            return GetAttack(EAttackType.Melee).HasValue;
-        }
-        
-        public bool HasRangedAttack()
-        {
-            return GetAttack(EAttackType.Ranged).HasValue;
+            if (_attacks == null || _attacks.Length == 0)
+                return null;
+
+            return _attacks[UnityEngine.Random.Range(0, _attacks.Length)];
         }
     }
 }

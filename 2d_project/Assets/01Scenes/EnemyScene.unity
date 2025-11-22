@@ -197,11 +197,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _spawnPoint: {fileID: 318308524}
   _spawnInterval: 0.5
-  _maxEnemyCount: 10
+  _maxEnemyCount: 1
   _spawnOnStart: 1
   _targetTransform: {fileID: 1141635052}
   _enemyFactory: {fileID: 68681944}
-  _spawnableTypes: 0000000001000000
+  _spawnableTypes: 01000000
 --- !u!4 &318308524
 Transform:
   m_ObjectHideFlags: 0
@@ -448,7 +448,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1141635052}
   - component: {fileID: 1141635051}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Target
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -519,7 +519,7 @@ Transform:
   m_GameObject: {fileID: 1141635050}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.917, y: -1.851, z: 0}
+  m_LocalPosition: {x: 1.94, y: 0.13, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -573,6 +573,8 @@ MonoBehaviour:
   - _prefab: {fileID: 1251622687332111883, guid: 51bfaff3d4b0843ccb024e93a25d41b1, type: 3}
     _initialCount: 10
   - _prefab: {fileID: 4764015819681133763, guid: bbb63ffc3e8bc44858b84ea4fa6b9ebe, type: 3}
+    _initialCount: 10
+  - _prefab: {fileID: 523271577020436131, guid: 643e1463606de8e4b9d48df17db0b5c8, type: 3}
     _initialCount: 10
   _poolContainer: {fileID: 1940746978}
 --- !u!1660057539 &9223372036854775807

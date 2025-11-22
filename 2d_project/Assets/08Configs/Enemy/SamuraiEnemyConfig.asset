@@ -19,12 +19,5 @@ MonoBehaviour:
   _experience: 100
   _score: 200
   _attacks:
-  - AttackName: "\uADFC\uC811 \uACF5\uACA9"
-    Type: 0
-    Damage: 30
-    AttackRadius: 2
-  - AttackName: "\uC6D0\uAC70\uB9AC \uACF5\uACA9"
-    Type: 1
-    Damage: 20
-    AttackRadius: 15
+  - {fileID: 11400000, guid: fc2520e7838a84ee7a891523097b0289, type: 2}
   _spawnWeight: 10

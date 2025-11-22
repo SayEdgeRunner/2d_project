@@ -36,6 +36,10 @@ PrefabInstance:
       propertyPath: m_SpriteTilingProperty.oldSize.x
       value: 1.5
       objectReference: {fileID: 0}
+    - target: {fileID: 1406648490457886792, guid: f65486332233f43699896dcb20f6fdc0, type: 3}
+      propertyPath: _stopDistance
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 2931732663354472291, guid: f65486332233f43699896dcb20f6fdc0, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -50,11 +54,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8480602124409621872, guid: f65486332233f43699896dcb20f6fdc0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.6727035
+      value: 1.71
       objectReference: {fileID: 0}
     - target: {fileID: 8480602124409621872, guid: f65486332233f43699896dcb20f6fdc0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.23237102
+      value: -2.01
       objectReference: {fileID: 0}
     - target: {fileID: 8480602124409621872, guid: f65486332233f43699896dcb20f6fdc0, type: 3}
       propertyPath: m_LocalPosition.z
@@ -95,10 +99,39 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6816355017509226043, guid: f65486332233f43699896dcb20f6fdc0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1126447561568130242}
   m_SourcePrefab: {fileID: 100100000, guid: f65486332233f43699896dcb20f6fdc0, type: 3}
+--- !u!1 &4764015819681133763 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6816355017509226043, guid: f65486332233f43699896dcb20f6fdc0, type: 3}
+  m_PrefabInstance: {fileID: 2055226804347187960}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1126447561568130242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4764015819681133763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7215dcc39f7148738d4982ddac208ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _attackPoint: {fileID: 7580832852705705864}
+  _targetLayer:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!95 &7483483367107349812 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 8889839147062394828, guid: f65486332233f43699896dcb20f6fdc0, type: 3}
+  m_PrefabInstance: {fileID: 2055226804347187960}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &7580832852705705864 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8480602124409621872, guid: f65486332233f43699896dcb20f6fdc0, type: 3}
   m_PrefabInstance: {fileID: 2055226804347187960}
   m_PrefabAsset: {fileID: 0}
